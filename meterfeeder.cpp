@@ -13,108 +13,146 @@ enum
 };
 
 // Defines
-FT_HANDLE ftHandle;
-FT_STATUS ftdiStatus;
+vector<FT_HANDLE> ftHandles;
+vector<string> deviceIds;
+DWORD numDevices;
 
-string DeviceFind();
-bool DeviceStartup();
-void DeviceShutdown();
+bool DevicesCount();
+bool DevicesFind();
+bool DevicesStartup();
+void DevicesShutdown();
 
 int main() {
-	// open FTDI device
-	if (!DeviceStartup()) {
+	// open FTDI devices
+	if (!DevicesStartup()) {
 		cout << "Press any key to exit." << endl;
 		cin.get();
 		return -1;
 	}
 
-	// start streaming device
-	// Send streaming command = 0x96
-	unsigned char init_comm = 0x96;
-	DWORD bytesToTx = 1;
-	DWORD bytesTxd = 0;
+	unsigned char init_comm;
+	DWORD bytesToTx;
+	DWORD bytesTxd;
 
-	// WRITE TO DEVICE
-	FT_Purge(ftHandle, FT_PURGE_RX | FT_PURGE_TX);
+	cout << endl << "Sampling..." << endl << endl;
 
-	ftdiStatus = FT_Write(ftHandle, &init_comm, bytesToTx, &bytesTxd);
-	if (ftdiStatus != FT_OK || bytesTxd != bytesToTx) {
-		cout << "%%%% Write Failed!" << endl;
-		return -1;
-	}
+	for (int s = 0; s < 10; s++) {
+		for (int i = 0; i < numDevices; i++) {
+			// start streaming device
+			// Send streaming command = 0x96
+			init_comm = 0x96;
+			bytesToTx = 1;
+			bytesTxd = 0;
 
-	// READ FROM DEVICE
-	DWORD bytesRxd = 0;
-	int bytesToRx = 8;
-	unsigned char dxData[8];
+			// WRITE TO DEVICE
+			FT_Purge(ftHandles[i], FT_PURGE_RX | FT_PURGE_TX);
 
-	ftdiStatus = FT_Read(ftHandle, &dxData, bytesToRx, &bytesRxd);
-	if (ftdiStatus != FT_OK || bytesRxd != bytesToRx) {
-		cout << "%%%% Read Failed!" << endl;
-		return -1;
-	}
+			FT_STATUS ftdiStatus;
+			ftdiStatus = FT_Write(ftHandles[i], &init_comm, bytesToTx, &bytesTxd);
+			if (ftdiStatus != FT_OK || bytesTxd != bytesToTx) {
+				cout << "%%%% Write Failed!" << endl;
+				return -1;
+			}
 
-	for (int i = 0; i < (int)bytesRxd; i++) {
-		printf("%X ", dxData[i] & 0xff);
+			// READ FROM DEVICE
+			DWORD bytesRxd = 0;
+			int bytesToRx = 8;
+			unsigned char dxData[8];
+
+			ftdiStatus = FT_Read(ftHandles[i], &dxData, bytesToRx, &bytesRxd);
+			if (ftdiStatus != FT_OK || bytesRxd != bytesToRx) {
+				cout << "%%%% Read Failed!" << endl;
+				return -1;
+			}
+
+			cout << deviceIds[i] << ": ";
+			for (int i = 0; i < (int)bytesRxd; i++) {
+				printf("%X ", dxData[i] & 0xff);
+			}
+			cout << endl;
+		}
+
+		cout << endl;
 	}
 
 	return 0;
 }
 
-// function to find device
-string DeviceFind() {
-	DWORD devCount;
+// function to find how many devices
+bool DevicesCount() {
+	FT_STATUS ftResult = FT_CreateDeviceInfoList(&numDevices);
+	if (numDevices<1 || ftResult != FT_OK)
+		return false;
 
-	FT_STATUS ftResult = FT_CreateDeviceInfoList(&devCount);
-	if (devCount<1 || ftResult != FT_OK)
-		return "";
+	return true;
+}
 
-	vector<FT_DEVICE_LIST_INFO_NODE> devInfoList(devCount);
+// function to find devices
+bool DevicesFind() {
+	vector<FT_DEVICE_LIST_INFO_NODE> devInfoList(numDevices);
 
-	ftResult = FT_GetDeviceInfoList(&devInfoList[0], &devCount);
+	FT_STATUS ftResult = FT_GetDeviceInfoList(&devInfoList[0], &numDevices);
 	if (ftResult != FT_OK)
-		return "";
+		return false;
 
-	for (unsigned i = 0; i<devCount; i++) {
+	for (unsigned i = 0; i<numDevices; i++) {
 		string deviceId = devInfoList[i].SerialNumber;
 		deviceId.resize(sizeof(devInfoList[i].SerialNumber));
-
+		
 		// do we have a MED1K or MED100K device?
-		if (deviceId.find("QWR4") == 0)
-			return deviceId;
+		if (deviceId.find("QWR4") == 0) {
+			// soliax: this was only returning one deviceId, even with 2 plugged in.
+			//return deviceId;
+			cout << "Found " << deviceId << ": " << devInfoList[i].Description << endl;
+			deviceIds.push_back(deviceId);
+		} else if (deviceId.compare("") == 0) {
+			cout << "%%%% device not found!" << endl;
+			return false;
+		}
 	}
 
-	return "";
-};
+	return true;
+}
 
-// function to start device
-bool DeviceStartup() {
+// function to start devices
+bool DevicesStartup() {
+	if (!DevicesCount()) {
+		cout << "Failed to get number of devices" << endl;
+		return false;
+	} else {
+		cout << numDevices << " devices connected" << endl;
+	}
 
-	string deviceId = DeviceFind();
-
-	if (deviceId.compare("") == 0) {
-		cout << "%%%% device not found!" << endl;
+	if (!DevicesFind()) {
+		cout << "Failed to find any compatible devices" << endl;
 		return false;
 	}
 
-	cout << "deviceId: " << deviceId << "\n\n";
 
-	// open device by deviceId
-	FT_STATUS ftStatus = FT_OpenEx((PVOID)deviceId.c_str(), FT_OPEN_BY_SERIAL_NUMBER, &ftHandle);
-	if (ftStatus != FT_OK) {
-		cout << "%%%% device failed to open!" << endl;
-		return false;
+	// open devices by deviceId
+	for (int i = 0; i < numDevices; i++) {
+		FT_HANDLE ftHandle;
+		string deviceId = deviceIds[i];
+
+		FT_STATUS ftStatus = FT_OpenEx((PVOID)deviceId.c_str(), FT_OPEN_BY_SERIAL_NUMBER, &ftHandle);
+		if (ftStatus != FT_OK) {
+			cout << deviceId << " failed to open!" << endl;
+			return false;
+		}
+		ftHandles.push_back(ftHandle);
+
+		// configure FTDI transport parameters
+		FT_SetLatencyTimer(ftHandles[i], FTDI_DEVICE_LATENCY_MS);
+		FT_SetUSBParameters(ftHandles[i], FTDI_DEVICE_PACKET_USB_SIZE, FTDI_DEVICE_PACKET_USB_SIZE);
+		FT_SetTimeouts(ftHandles[i], FTDI_DEVICE_TX_TIMEOUT, FTDI_DEVICE_TX_TIMEOUT);
+
+		cout << deviceId << " initialized" << endl;
 	}
-
-	// configure FTDI transport parameters
-	FT_SetLatencyTimer(ftHandle, FTDI_DEVICE_LATENCY_MS);
-	FT_SetUSBParameters(ftHandle, FTDI_DEVICE_PACKET_USB_SIZE, FTDI_DEVICE_PACKET_USB_SIZE);
-	FT_SetTimeouts(ftHandle, FTDI_DEVICE_TX_TIMEOUT, FTDI_DEVICE_TX_TIMEOUT);
 
 	return true;
 };
 
 // function to shut down device
-void DeviceShutdown() {
-	FT_Close(ftHandle);
-};
+void DevicesShutdown() {
+	// FT_Close(ftHandles);
+}
