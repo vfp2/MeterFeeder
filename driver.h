@@ -51,7 +51,7 @@ namespace MeterFeeder {
          *
          * @return The list of Generators.
          */
-        vector<Generator*>* GetListGenerators();
+        vector<Generator>* GetListGenerators();
 
         /**
          * Get a byte of randomness.
@@ -63,7 +63,7 @@ namespace MeterFeeder {
         void GetByte(FT_HANDLE* handle, unsigned char *entropyByte, char* errorReason);
 
         private:
-            vector<Generator*> _generators;
+            vector<Generator> _generators;
             Generator* findGenerator(FT_HANDLE* handle);
     };
 }

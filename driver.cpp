@@ -56,7 +56,7 @@ bool MeterFeeder::Driver::Initialize(char* errorReason) {
 		}
 
 		// Device is successfully initialized. Add it to the list of generators the driver will control.
-		Generator *generator = new Generator(&devInfoList[i].SerialNumber[0], &devInfoList[i].Description[0], &ftHandle);
+		Generator generator = Generator(&devInfoList[i].SerialNumber[0], &devInfoList[i].Description[0], &ftHandle);
 		_generators.push_back(generator);
 	}
 
@@ -66,7 +66,7 @@ bool MeterFeeder::Driver::Initialize(char* errorReason) {
 void MeterFeeder::Driver::Shutdown() {
 	// Shutdown all generators
 	for (int i = 0; i < _generators.size(); i++) {
-		_generators[i]->Close();
+		_generators[i].Close();
 	}
 };
 
@@ -74,7 +74,7 @@ int MeterFeeder::Driver::GetNumberGenerators() {
 	return _generators.size();	
 };
 
-vector<MeterFeeder::Generator*>* MeterFeeder::Driver::GetListGenerators() {
+vector<MeterFeeder::Generator>* MeterFeeder::Driver::GetListGenerators() {
 	return &_generators;
 };
 
@@ -101,9 +101,11 @@ void MeterFeeder::Driver::GetByte(FT_HANDLE* handle, unsigned char* entropyByte,
 };
 
 MeterFeeder::Generator* MeterFeeder::Driver::findGenerator(FT_HANDLE *handle) {
-	for (int i = 0; i < _generators.size(); i++)
-		if (_generators[i]->GetHandle() == handle)
-			return _generators[i];
+	for (int i = 0; i < _generators.size(); i++) {
+		if (_generators[i].GetHandle() == handle) {
+			return &_generators[i];
+		}
+	}
 
 	return nullptr;
 };
