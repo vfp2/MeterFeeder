@@ -60,10 +60,10 @@ namespace MeterFeeder {
          * @param Pointer where to store the byte.
          * @param Error reason upon failure to retrieve data.
          */
-        void GetByte(FT_HANDLE* handle, unsigned char *entropyByte, char* errorReason);
+        void GetByte(FT_HANDLE handle, unsigned char *entropyByte, char* errorReason);
 
         private:
             vector<Generator> _generators;
-            Generator* findGenerator(FT_HANDLE* handle);
+            Generator* findGenerator(FT_HANDLE handle);
     };
 }

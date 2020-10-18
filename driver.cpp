@@ -23,17 +23,17 @@ bool MeterFeeder::Driver::Initialize(char* errorReason) {
 
 	// open devices by deviceId
 	for (int i = 0; i < numDevices; i++) {
-		string deviceId = devInfoList[i].SerialNumber;
-		deviceId.resize(sizeof(devInfoList[i].SerialNumber));
+		string serialNumber = devInfoList[i].SerialNumber;
+		serialNumber.resize(sizeof(devInfoList[i].SerialNumber));
 		FT_HANDLE ftHandle = devInfoList[i].ftHandle;
 
-		if (deviceId.find("QWR4") != 0) {
+		if (serialNumber.find("QWR4") != 0) {
 			// Skip any other but MED1K or MED100K devices
 			continue;
 		}
 
 		// Open the current device
-		ftdiStatus = FT_OpenEx(devInfoList[i].SerialNumber, FT_OPEN_BY_SERIAL_NUMBER, &ftHandle);
+		ftdiStatus = FT_OpenEx(&devInfoList[i].SerialNumber, FT_OPEN_BY_SERIAL_NUMBER, &ftHandle);
 		if (ftdiStatus != FT_OK) {
 			return false;
 		}
@@ -56,7 +56,7 @@ bool MeterFeeder::Driver::Initialize(char* errorReason) {
 		}
 
 		// Device is successfully initialized. Add it to the list of generators the driver will control.
-		Generator generator = Generator(&devInfoList[i].SerialNumber[0], &devInfoList[i].Description[0], &ftHandle);
+		Generator generator = Generator(&devInfoList[i].SerialNumber[0], &devInfoList[i].Description[0], ftHandle);
 		_generators.push_back(generator);
 	}
 
@@ -78,7 +78,7 @@ vector<MeterFeeder::Generator>* MeterFeeder::Driver::GetListGenerators() {
 	return &_generators;
 };
 
-void MeterFeeder::Driver::GetByte(FT_HANDLE* handle, unsigned char* entropyByte, char* errorReason) {
+void MeterFeeder::Driver::GetByte(FT_HANDLE handle, unsigned char* entropyByte, char* errorReason) {
 	// Find the specified generator
 	Generator *generator = findGenerator(handle);
 	if (!generator) {
@@ -100,7 +100,7 @@ void MeterFeeder::Driver::GetByte(FT_HANDLE* handle, unsigned char* entropyByte,
 	}
 };
 
-MeterFeeder::Generator* MeterFeeder::Driver::findGenerator(FT_HANDLE *handle) {
+MeterFeeder::Generator* MeterFeeder::Driver::findGenerator(FT_HANDLE handle) {
 	for (int i = 0; i < _generators.size(); i++) {
 		if (_generators[i].GetHandle() == handle) {
 			return &_generators[i];

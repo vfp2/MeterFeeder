@@ -25,7 +25,7 @@ namespace MeterFeeder {
      */
     class Generator {
         public:
-            Generator(char* serialNumber, char* description, FT_HANDLE* handle);
+            Generator(char* serialNumber, char* description, FT_HANDLE handle);
 
             /**
              * Get the generator's serial number. E.g. "QWR4A003"
@@ -46,7 +46,7 @@ namespace MeterFeeder {
              * 
              * @return The FT_HANDLE for specifying this device.
              */
-            FT_HANDLE* GetHandle();
+            FT_HANDLE GetHandle();
 
             /**
              * Send command to start streaming.
@@ -72,6 +72,6 @@ namespace MeterFeeder {
         private:
             char* serialNumber_;
             char* description_;
-            FT_HANDLE* ftHandle_;
+            FT_HANDLE ftHandle_;
     };
 }

@@ -6,7 +6,7 @@
 
 #include "generator.h"
 
-MeterFeeder::Generator::Generator(char* serialNumber, char* description, FT_HANDLE* handle) {
+MeterFeeder::Generator::Generator(char* serialNumber, char* description, FT_HANDLE handle) {
     serialNumber_ = serialNumber;
     description_ = description;
     ftHandle_ = handle;
@@ -20,7 +20,7 @@ char* MeterFeeder::Generator::GetDescription() {
     return description_;
 };
 
-FT_HANDLE* MeterFeeder::Generator::GetHandle() {
+FT_HANDLE MeterFeeder::Generator::GetHandle() {
     return ftHandle_;
 };
 
