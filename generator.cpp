@@ -7,8 +7,8 @@
 #include "generator.h"
 
 MeterFeeder::Generator::Generator(char* serialNumber, char* description, FT_HANDLE handle) {
-    serialNumber_.copy(serialNumber, 16, 0);
-    description_.copy(description, 64, 0);
+    serialNumber_ = serialNumber;
+    description_ = description;
     ftHandle_ = handle;
 };
 
