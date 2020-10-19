@@ -7,16 +7,16 @@
 #include "generator.h"
 
 MeterFeeder::Generator::Generator(char* serialNumber, char* description, FT_HANDLE handle) {
-    serialNumber_ = serialNumber;
-    description_ = description;
+    serialNumber_.copy(serialNumber, 16, 0);
+    description_.copy(description, 64, 0);
     ftHandle_ = handle;
 };
 
-char* MeterFeeder::Generator::GetSerialNumber() {
+std::string MeterFeeder::Generator::GetSerialNumber() {
     return serialNumber_;
 };
 
-char* MeterFeeder::Generator::GetDescription() {
+std::string MeterFeeder::Generator::GetDescription() {
     return description_;
 };
 

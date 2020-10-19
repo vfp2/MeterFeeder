@@ -32,7 +32,7 @@ namespace MeterFeeder {
          * 
          * @return true on successful initialization, false on failure
          */
-        bool Initialize(char* errorReason);
+        bool Initialize(string* errorReason);
 
         /**
          * Shutdown and de-initialize all the generators.
@@ -60,10 +60,11 @@ namespace MeterFeeder {
          * @param Pointer where to store the byte.
          * @param Error reason upon failure to retrieve data.
          */
-        void GetByte(FT_HANDLE handle, unsigned char *entropyByte, char* errorReason);
+        void GetByte(FT_HANDLE handle, unsigned char *entropyByte, string* errorReason);
 
         private:
             vector<Generator> _generators;
             Generator* findGenerator(FT_HANDLE handle);
+            void makeErrorStr(string* errorReason, const char* format, ...);
     };
 }

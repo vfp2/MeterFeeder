@@ -32,14 +32,14 @@ namespace MeterFeeder {
              * 
              * @return The serial number of the generator device.
              */
-            char* GetSerialNumber();
+            std::string GetSerialNumber();
 
             /**
              * Get the generator's description. E.g. "MED100K 100 kHz v1.0"
              * 
              * @return The description of the generator device.
              */
-            char* GetDescription();
+            std::string GetDescription();
 
             /**
              * Get the handle for interacting with the generator.
@@ -70,8 +70,8 @@ namespace MeterFeeder {
             void Close();
 
         private:
-            char* serialNumber_;
-            char* description_;
+            std::string serialNumber_;
+            std::string description_;
             FT_HANDLE ftHandle_;
     };
 }
