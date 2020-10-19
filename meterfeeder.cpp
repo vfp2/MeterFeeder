@@ -24,7 +24,7 @@ int main() {
 		Generator *generator = &generators->at(i);
 		UCHAR byte;
 		driver->GetByte(generator->GetHandle(), &byte, &errorReason);
-		if (errorReason.length() == 0) {
+		if (errorReason.length() != 0) {
 			cout << errorReason << endl;
 			return -1;
 		}
