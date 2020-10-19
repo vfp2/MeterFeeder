@@ -1,5 +1,5 @@
 /**
- * MeterFeed Library
+ * MeterFeeder Library
  * 
  * by fp2.dev
  */
