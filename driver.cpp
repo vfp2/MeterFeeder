@@ -94,7 +94,6 @@ void MeterFeeder::Driver::GetByte(FT_HANDLE handle, unsigned char* entropyByte, 
 	}
 
 	// Read in the entropy
-	UCHAR dxData;
 	if (MF_DEVICE_ERROR == generator->Read(entropyByte)) {
 		makeErrorStr(errorReason, "Error reading in entropy from %s", generator->GetSerialNumber().c_str());
 		return;
