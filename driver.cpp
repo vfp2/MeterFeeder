@@ -83,20 +83,20 @@ void MeterFeeder::Driver::GetByte(FT_HANDLE handle, unsigned char* entropyByte, 
 	// Find the specified generator
 	Generator *generator = findGenerator(handle);
 	if (!generator) {
-		makeErrorStr(errorReason, "Could not find generator by that handle");
+		makeErrorStr(errorReason, "Could not find %s by the handle %x", generator->GetSerialNumber().c_str(), generator->GetHandle());
 		return;
 	}
 
 	// Get the device to start measuring randomness
 	if (MF_DEVICE_ERROR == generator->Stream()) {
-		makeErrorStr(errorReason, "Error instructing the generator to start streaming entropy");
+		makeErrorStr(errorReason, "Error instructing %s to start streaming entropy", generator->GetSerialNumber().c_str());
 		return;
 	}
 
 	// Read in the entropy
 	UCHAR dxData;
 	if (MF_DEVICE_ERROR == generator->Read(entropyByte)) {
-		makeErrorStr(errorReason, "Error reading in entropy from the generator");
+		makeErrorStr(errorReason, "Error reading in entropy from %s", generator->GetSerialNumber().c_str());
 		return;
 	}
 };

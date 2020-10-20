@@ -26,7 +26,8 @@ int main() {
 		driver->GetByte(generator->GetHandle(), &byte, &errorReason);
 		if (errorReason.length() != 0) {
 			cout << errorReason << endl;
-			return -1;
+			errorReason = ""; // reset error for next device
+			continue;
 		}
 		cout << generator->GetSerialNumber() << " : " << (int)byte << endl;
 	}
