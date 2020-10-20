@@ -7,6 +7,7 @@
 #pragma once
 
 #include <iostream>
+#include <stdarg.h>
 #include <string>
 #include <vector>
 
