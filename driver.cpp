@@ -118,3 +118,33 @@ void MeterFeeder::Driver::makeErrorStr(string* errorReason, const char* format, 
 	*errorReason = buffer;
 	va_end (args);
 };
+
+/**
+ * Code below for interfacing with MeterFeeder as a library
+ */
+
+// #ifdef APPLE
+	#define DllExport __attribute__((visibility("default")))
+// #else
+// 	#define DllExport _declspec (dllexport)
+// #endif
+
+char test[]= "hello steve";
+
+extern "C" {
+	/**
+	 * Library functions exposed for consumption by Unity/C# or whomever
+	 */
+
+	// Initialize the connected generators
+	DllExport int Initialize(char *errorReason) {
+		errorReason = &test[0];
+		return 1;
+	}
+
+	// Shutdown
+
+	// Return the list of connected and initialized generators
+
+	// Get entropy from the specified generator
+}
