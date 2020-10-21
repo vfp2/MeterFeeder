@@ -129,17 +129,30 @@ void MeterFeeder::Driver::makeErrorStr(string* errorReason, const char* format, 
 // 	#define DllExport _declspec (dllexport)
 // #endif
 
-char test[]= "hello steve";
-
 extern "C" {
 	/**
 	 * Library functions exposed for consumption by Unity/C# or whomever
 	 */
 
+	using namespace MeterFeeder;
+	Driver driver = Driver();
+
 	// Initialize the connected generators
 	DllExport int Initialize(char *errorReason) {
-		errorReason = &test[0];
-		return 1;
+		cout << errorReason << endl;
+
+		driver.Initialize((char*)errorReason);
+		
+		// printf("\nStart c Function!\n");
+		// printf("%s\n Printing param\n ", errorReason);
+		char add = '!';
+		strncat(errorReason, &add, 1);
+
+		// printf("%s\n Printing param\n ", errorReason);
+		// printf("Function Done - c\n");
+		// errorReason = (char*)"aeh";
+		// cout << errorReason << endl;
+		return 99;
 	}
 
 	// Shutdown
