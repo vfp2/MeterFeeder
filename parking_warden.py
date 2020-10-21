@@ -20,17 +20,30 @@
 import platform
 from ctypes import *
 
-meter_feeder_lib = cdll.LoadLibrary('./libmeterfeeder.dylib')
-
+# Config the Python<->C++ interface with MeterFeeder
+meter_feeder_lib = cdll.LoadLibrary('/Users/simon/DropboxPersonal/MMI/codeiMac/MeterFeeder/libmeterfeeder.dylib')
 meter_feeder_lib.Initialize.argtypes = c_char_p,
 meter_feeder_lib.Initialize.restype = c_int
+meter_feeder_lib.GetNumberGenerators.restype = c_int
+meter_feeder_lib.GetByte.argtypes = c_char_p, c_char_p,
+meter_feeder_lib.GetByte.restype = c_ubyte
 
-buf = create_string_buffer(256)
-buf.value = b'bikkurime'
-res=-1
-meter_feeder_lib.Initialize(buf)
-print("res: " + str(res) + ", print on python side:", buf.value.decode("utf-8"))
+errorReason = create_string_buffer(256)
 
+# Initialize the driver
+result = meter_feeder_lib.Initialize(errorReason)
+print("MeterFeeder::Initialize: result: " + str(result) + ", errorReason:", errorReason.value)
+if (len(errorReason.value) > 0):
+    exit(result)
+result = meter_feeder_lib.GetNumberGenerators()
+print("MeterFeeder::GetNumberGenerators: result: " + str(result))
+
+result = meter_feeder_lib.GetByte("QWR4M004", errorReason)
+print("MeterFeeder::GetByte: result: " + str(result) + ", errorReason:", errorReason.value)
+
+# Shutdown the driver
+meter_feeder_lib.Shutdown()
+print("MeterFeeder::Shutdown")
 
 # meter_feeder.Initialize.argtypes = [c_char_p]
 # meter_feeder.Initialize.restype = c_int
