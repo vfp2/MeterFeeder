@@ -55,6 +55,25 @@ namespace MeterFeeder {
         vector<Generator>* GetListGenerators();
 
         /**
+         * Find generator specified by FT_HANDLE.
+         * 
+         * @param FT_HANDLE determined when the device was opened.
+         * 
+         * @return The Generator object if found, else null.
+         */
+        Generator* FindGenerator(FT_HANDLE handle);
+
+        /**
+         * Find generator specified by serial number.
+         * 
+         * @param Serial number identifying the device.
+         * 
+         * @return The Generator object if found, else null.
+         */
+        
+        Generator* FindGenerator(string serialNumber);
+
+        /**
          * Get a byte of randomness.
          * 
          * @param The handle of the generator.
@@ -65,7 +84,6 @@ namespace MeterFeeder {
 
         private:
             vector<Generator> _generators;
-            Generator* findGenerator(FT_HANDLE handle);
             void makeErrorStr(string* errorReason, const char* format, ...);
     };
 }

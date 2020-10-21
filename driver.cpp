@@ -81,7 +81,7 @@ vector<MeterFeeder::Generator>* MeterFeeder::Driver::GetListGenerators() {
 
 void MeterFeeder::Driver::GetByte(FT_HANDLE handle, unsigned char* entropyByte, string* errorReason) {
 	// Find the specified generator
-	Generator *generator = findGenerator(handle);
+	Generator *generator = FindGenerator(handle);
 	if (!generator) {
 		makeErrorStr(errorReason, "Could not find %s by the handle %x", generator->GetSerialNumber().c_str(), generator->GetHandle());
 		return;
@@ -100,9 +100,19 @@ void MeterFeeder::Driver::GetByte(FT_HANDLE handle, unsigned char* entropyByte, 
 	}
 };
 
-MeterFeeder::Generator* MeterFeeder::Driver::findGenerator(FT_HANDLE handle) {
+MeterFeeder::Generator* MeterFeeder::Driver::FindGenerator(FT_HANDLE handle) {
 	for (int i = 0; i < _generators.size(); i++) {
 		if (_generators[i].GetHandle() == handle) {
+			return &_generators[i];
+		}
+	}
+
+	return nullptr;
+};
+
+MeterFeeder::Generator* MeterFeeder::Driver::FindGenerator(string serialNumber) {
+	for (int i = 0; i < _generators.size(); i++) {
+		if (_generators[i].GetSerialNumber() == serialNumber) {
 			return &_generators[i];
 		}
 	}
