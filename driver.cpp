@@ -121,10 +121,10 @@ MeterFeeder::Generator* MeterFeeder::Driver::FindGenerator(string serialNumber) 
 };
 
 void MeterFeeder::Driver::makeErrorStr(string* errorReason, const char* format, ...) {
-	char buffer[256];
+	char buffer[MF_ERROR_STR_MAX_LEN];
 	va_list args;
 	va_start (args, format);
-	vsnprintf (buffer, 255, format, args);
+	vsnprintf (buffer, MF_ERROR_STR_MAX_LEN-1, format, args);
 	*errorReason = buffer;
 	va_end (args);
 };
@@ -148,26 +148,35 @@ extern "C" {
 	Driver driver = Driver();
 
 	// Initialize the connected generators
-	DllExport int Initialize(char *errorReason) {
-		cout << errorReason << endl;
-
-		driver.Initialize((char*)errorReason);
-		
-		// printf("\nStart c Function!\n");
-		// printf("%s\n Printing param\n ", errorReason);
-		char add = '!';
-		strncat(errorReason, &add, 1);
-
-		// printf("%s\n Printing param\n ", errorReason);
-		// printf("Function Done - c\n");
-		// errorReason = (char*)"aeh";
-		// cout << errorReason << endl;
-		return 99;
+	DllExport int Initialize(char *pErrorReason) {
+		string errorReason = "";
+		int res = driver.Initialize(&errorReason);
+		std::strcpy(pErrorReason, errorReason.c_str());
+		return res;
 	}
 
-	// Shutdown
+	// Shutdown and de-initialize all the generators.
+    DllExport void Shutdown() {
+		driver.Shutdown();
+	}
 
-	// Return the list of connected and initialized generators
+    // Get the number of connected and successfully initialized generators.
+	DllExport int GetNumberGenerators() {
+		return driver.GetNumberGenerators();
+	}
 
-	// Get entropy from the specified generator
+  	/// Get the list of connected and successfully initialized generators.
+	DllExport vector<Generator>* GetListGenerators() {
+
+	}
+
+	// Get a byte of randomness.
+	DllExport unsigned char GetByte(char* generatorSerialNumber, char* pErrorReason) {
+		string errorReason = "";
+		Generator *generator = driver.FindGenerator("QWR4M004");
+		unsigned char byte = 1;
+		driver.GetByte(generator->GetHandle(), &byte, &errorReason);
+		std::strcpy(pErrorReason, errorReason.c_str());
+		return byte;
+	}
 }
