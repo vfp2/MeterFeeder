@@ -173,7 +173,7 @@ extern "C" {
 	// Get a byte of randomness.
 	DllExport unsigned char GetByte(char* generatorSerialNumber, char* pErrorReason) {
 		string errorReason = "";
-		Generator *generator = driver.FindGenerator("QWR4M004");
+		Generator *generator = driver.FindGenerator(generatorSerialNumber);
 		unsigned char byte = 1;
 		driver.GetByte(generator->GetHandle(), &byte, &errorReason);
 		std::strcpy(pErrorReason, errorReason.c_str());
