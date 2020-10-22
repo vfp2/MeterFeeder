@@ -81,7 +81,7 @@ vector<MeterFeeder::Generator>* MeterFeeder::Driver::GetListGenerators() {
 
 void MeterFeeder::Driver::GetByte(FT_HANDLE handle, unsigned char* entropyByte, string* errorReason) {
 	// Find the specified generator
-	Generator *generator = findGenerator(handle);
+	Generator *generator = FindGeneratorByHandle(handle);
 	if (!generator) {
 		makeErrorStr(errorReason, "Could not find %s by the handle %x", generator->GetSerialNumber().c_str(), generator->GetHandle());
 		return;
@@ -100,7 +100,7 @@ void MeterFeeder::Driver::GetByte(FT_HANDLE handle, unsigned char* entropyByte, 
 	}
 };
 
-MeterFeeder::Generator* MeterFeeder::Driver::findGenerator(FT_HANDLE handle) {
+MeterFeeder::Generator* MeterFeeder::Driver::FindGeneratorByHandle(FT_HANDLE handle) {
 	for (int i = 0; i < _generators.size(); i++) {
 		if (_generators[i].GetHandle() == handle) {
 			return &_generators[i];
@@ -110,11 +110,21 @@ MeterFeeder::Generator* MeterFeeder::Driver::findGenerator(FT_HANDLE handle) {
 	return nullptr;
 };
 
+MeterFeeder::Generator* MeterFeeder::Driver::FindGeneratorBySerial(string serialNumber) {
+	for (int i = 0; i < _generators.size(); i++) {
+		if (_generators[i].GetSerialNumber() == serialNumber) {
+			return &_generators[i];
+		}
+	}
+
+	return nullptr;
+};
+
 void MeterFeeder::Driver::makeErrorStr(string* errorReason, const char* format, ...) {
-	char buffer[256];
+	char buffer[MF_ERROR_STR_MAX_LEN];
 	va_list args;
 	va_start (args, format);
-	vsnprintf (buffer, 255, format, args);
+	vsnprintf (buffer, MF_ERROR_STR_MAX_LEN-1, format, args);
 	*errorReason = buffer;
 	va_end (args);
 };
@@ -129,22 +139,44 @@ void MeterFeeder::Driver::makeErrorStr(string* errorReason, const char* format, 
 // 	#define DllExport _declspec (dllexport)
 // #endif
 
-char test[]= "hello steve";
-
 extern "C" {
 	/**
 	 * Library functions exposed for consumption by Unity/C# or whomever
 	 */
 
+	using namespace MeterFeeder;
+	Driver driver = Driver();
+
 	// Initialize the connected generators
-	DllExport int Initialize(char *errorReason) {
-		errorReason = &test[0];
-		return 1;
+	DllExport int Initialize(char *pErrorReason) {
+		string errorReason = "";
+		int res = driver.Initialize(&errorReason);
+		std::strcpy(pErrorReason, errorReason.c_str());
+		return res;
 	}
 
-	// Shutdown
+	// Shutdown and de-initialize all the generators.
+    DllExport void Shutdown() {
+		driver.Shutdown();
+	}
 
-	// Return the list of connected and initialized generators
+    // Get the number of connected and successfully initialized generators.
+	DllExport int GetNumberGenerators() {
+		return driver.GetNumberGenerators();
+	}
 
-	// Get entropy from the specified generator
+  	/// Get the list of connected and successfully initialized generators.
+	DllExport vector<Generator>* GetListGenerators() {
+		return nullptr; // TODO: implement
+	}
+
+	// Get a byte of randomness.
+	DllExport unsigned char GetByte(char* generatorSerialNumber, char* pErrorReason) {
+		string errorReason = "";
+		Generator *generator = driver.FindGeneratorBySerial(generatorSerialNumber);
+		unsigned char byte = 1;
+		driver.GetByte(generator->GetHandle(), &byte, &errorReason);
+		std::strcpy(pErrorReason, errorReason.c_str());
+		return byte;
+	}
 }

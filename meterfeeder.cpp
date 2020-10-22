@@ -29,7 +29,7 @@ int main() {
 			errorReason = ""; // reset error for next device
 			continue;
 		}
-		cout << generator->GetSerialNumber() << " : " << (int)byte << endl;
+		cout << generator->GetSerialNumber() << " (" << generator->GetDescription() << "): " << (int)byte << endl;
 	}
 	driver->Shutdown();
 }
