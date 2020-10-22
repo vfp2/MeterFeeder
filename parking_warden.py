@@ -4,6 +4,7 @@
  # by fp2.dev
  ##
 
+import os
 import platform
 from ctypes import *
 import numpy as np
@@ -11,7 +12,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 # Config the Python<->C++ interface with MeterFeeder
-meter_feeder_lib = cdll.LoadLibrary('/Users/simon/MMI/code/MeterFeeder/libmeterfeeder.dylib')
+meter_feeder_lib = cdll.LoadLibrary(os.getcwd() + '/libmeterfeeder.dylib')
 meter_feeder_lib.Initialize.argtypes = c_char_p,
 meter_feeder_lib.Initialize.restype = c_int
 meter_feeder_lib.GetNumberGenerators.restype = c_int
