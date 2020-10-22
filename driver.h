@@ -61,7 +61,7 @@ namespace MeterFeeder {
          * 
          * @return The Generator object if found, else null.
          */
-        Generator* FindGenerator(FT_HANDLE handle);
+        Generator* FindGeneratorByHandle(FT_HANDLE handle);
 
         /**
          * Find generator specified by serial number.
@@ -71,7 +71,7 @@ namespace MeterFeeder {
          * @return The Generator object if found, else null.
          */
         
-        Generator* FindGenerator(string serialNumber);
+        Generator* FindGeneratorBySerial(string serialNumber);
 
         /**
          * Get a byte of randomness.

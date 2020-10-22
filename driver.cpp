@@ -81,7 +81,7 @@ vector<MeterFeeder::Generator>* MeterFeeder::Driver::GetListGenerators() {
 
 void MeterFeeder::Driver::GetByte(FT_HANDLE handle, unsigned char* entropyByte, string* errorReason) {
 	// Find the specified generator
-	Generator *generator = FindGenerator(handle);
+	Generator *generator = FindGeneratorByHandle(handle);
 	if (!generator) {
 		makeErrorStr(errorReason, "Could not find %s by the handle %x", generator->GetSerialNumber().c_str(), generator->GetHandle());
 		return;
@@ -100,7 +100,7 @@ void MeterFeeder::Driver::GetByte(FT_HANDLE handle, unsigned char* entropyByte, 
 	}
 };
 
-MeterFeeder::Generator* MeterFeeder::Driver::FindGenerator(FT_HANDLE handle) {
+MeterFeeder::Generator* MeterFeeder::Driver::FindGeneratorByHandle(FT_HANDLE handle) {
 	for (int i = 0; i < _generators.size(); i++) {
 		if (_generators[i].GetHandle() == handle) {
 			return &_generators[i];
@@ -110,7 +110,7 @@ MeterFeeder::Generator* MeterFeeder::Driver::FindGenerator(FT_HANDLE handle) {
 	return nullptr;
 };
 
-MeterFeeder::Generator* MeterFeeder::Driver::FindGenerator(string serialNumber) {
+MeterFeeder::Generator* MeterFeeder::Driver::FindGeneratorBySerial(string serialNumber) {
 	for (int i = 0; i < _generators.size(); i++) {
 		if (_generators[i].GetSerialNumber() == serialNumber) {
 			return &_generators[i];
@@ -173,7 +173,7 @@ extern "C" {
 	// Get a byte of randomness.
 	DllExport unsigned char GetByte(char* generatorSerialNumber, char* pErrorReason) {
 		string errorReason = "";
-		Generator *generator = driver.FindGenerator(generatorSerialNumber);
+		Generator *generator = driver.FindGeneratorBySerial(generatorSerialNumber);
 		unsigned char byte = 1;
 		driver.GetByte(generator->GetHandle(), &byte, &errorReason);
 		std::strcpy(pErrorReason, errorReason.c_str());
