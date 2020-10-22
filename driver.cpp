@@ -167,7 +167,7 @@ extern "C" {
 
   	/// Get the list of connected and successfully initialized generators.
 	DllExport vector<Generator>* GetListGenerators() {
-
+		return nullptr; // TODO: implement
 	}
 
 	// Get a byte of randomness.
