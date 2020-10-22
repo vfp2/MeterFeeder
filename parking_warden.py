@@ -32,21 +32,39 @@ print("MeterFeeder::GetNumberGenerators: result: " + str(result))
 # >>> Real-time graphing results
 #
 
+def bin_array(num): # source: https://stackoverflow.com/a/47521145/1103264
+    """Convert a positive integer num into an 8-bit bit vector"""
+    return np.array(list(np.binary_repr(num).zfill(8))).astype(np.int8)
+
 fig, ax = plt.subplots()
 y1data, y2data = [], []
+cy1, cy2 = 0, 0
 
 def update(frame):
-    plt.cla() # clear legend each frame
+    global cy1, cy2
 
-    y1 = meter_feeder_lib.GetByte(b"QWR4M004", errorReason)
-    y1data.append(y1)
-    plt.plot(y1data, 'b-', label="QWR4M004")
+    y1 = meter_feeder_lib.GetByte(b"QWR4M004", errorReason) # TODO: enter your own serial number
+    y2 = meter_feeder_lib.GetByte(b"QWR4A003", errorReason) # TODO: enter your own serial number
+    y1b = bin_array(y1)
+    y2b = bin_array(y2)
+    for i in range(8):
+        plt.cla() # clear legend each draw
+        if (y1b[i] == 1):
+            cy1 += 1
+            y1data.append(cy1)
+        else:
+            cy1 -= 1
+            y1data.append(cy1)
+        if (y2b[i] == 1):
+            cy2 += 1
+            y2data.append(cy2)
+        else:
+            cy2 -= 1
+            y2data.append(cy2)
+        plt.plot(y1data, 'b-', label="QWR4M004 (QNG Model PQ4000KU)")    # TODO: enter your own serial number/description
+        plt.plot(y2data, 'r-', label="QWR4A003 (MED100K 100 kHz v1.0)")  # TODO: enter your own serial number/description
 
-    y2 = meter_feeder_lib.GetByte(b"QWR4A003", errorReason)
-    y2data.append(y2)
-    plt.plot(y2data, 'r-', label="QWR4A003")
-
-    plt.legend(loc=1)
+    plt.legend(loc=2)
 
 ani = FuncAnimation(fig, update, interval=1)
 plt.show()
