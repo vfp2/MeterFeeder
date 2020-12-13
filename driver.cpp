@@ -148,7 +148,7 @@ extern "C" {
 	Driver driver = Driver();
 
 	// Initialize the connected generators
-	DllExport int Initialize(char *pErrorReason) {
+	DllExport int MF_Initialize(char *pErrorReason) {
 		string errorReason = "";
 		int res = driver.Initialize(&errorReason);
 		std::strcpy(pErrorReason, errorReason.c_str());
@@ -156,22 +156,22 @@ extern "C" {
 	}
 
 	// Shutdown and de-initialize all the generators.
-    DllExport void Shutdown() {
+    DllExport void MF_Shutdown() {
 		driver.Shutdown();
 	}
 
     // Get the number of connected and successfully initialized generators.
-	DllExport int GetNumberGenerators() {
+	DllExport int MF_GetNumberGenerators() {
 		return driver.GetNumberGenerators();
 	}
 
   	/// Get the list of connected and successfully initialized generators.
-	DllExport vector<Generator>* GetListGenerators() {
+	DllExport vector<Generator>* MF_GetListGenerators() {
 		return nullptr; // TODO: implement
 	}
 
 	// Get a byte of randomness.
-	DllExport unsigned char GetByte(char* generatorSerialNumber, char* pErrorReason) {
+	DllExport unsigned char MF_GetByte(char* generatorSerialNumber, char* pErrorReason) {
 		string errorReason = "";
 		Generator *generator = driver.FindGeneratorBySerial(generatorSerialNumber);
 		unsigned char byte = 1;
