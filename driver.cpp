@@ -146,6 +146,7 @@ extern "C" {
 
 	using namespace MeterFeeder;
 	Driver driver = Driver();
+	UCHAR buffer[MF_FT_READ_MAX_BYTES]; 
 
 	// Initialize the connected generators
 	DllExport int MF_Initialize(char *pErrorReason) {
@@ -171,12 +172,25 @@ extern "C" {
 	}
 
 	// Get a byte of randomness.
-	DllExport unsigned char MF_GetByte(char* generatorSerialNumber, char* pErrorReason) {
+	DllExport unsigned char* MF_GetByte(char* generatorSerialNumber, char* pErrorReason) {
 		string errorReason = "";
 		Generator *generator = driver.FindGeneratorBySerial(generatorSerialNumber);
-		unsigned char byte = 1;
-		driver.GetByte(generator->GetHandle(), &byte, &errorReason);
+		driver.GetByte(generator->GetHandle(), buffer, &errorReason);
 		std::strcpy(pErrorReason, errorReason.c_str());
-		return byte;
+		return buffer;
+	}
+
+	// Get a byte of randomness.
+	DllExport int MF_GetBits(char* generatorSerialNumber, char* pErrorReason) {
+		string errorReason = "";
+		Generator *generator = driver.FindGeneratorBySerial(generatorSerialNumber);
+		driver.GetByte(generator->GetHandle(), buffer, &errorReason);
+		std::strcpy(pErrorReason, errorReason.c_str());
+ 		int fc = 0, i = 0;
+		for (i = 0; i < 1696; i++ ) {
+			fc += numOfSetBits(buffer[i]);
+		}
+		// fc += numOfSetBits(buffer[++i]>>1);
+		return fc;
 	}
 }

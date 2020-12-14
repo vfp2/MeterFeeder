@@ -82,6 +82,18 @@ namespace MeterFeeder {
          */
         void GetByte(FT_HANDLE handle, unsigned char *entropyByte, string* errorReason);
 
+        /**
+         * Get a chunk randomness. The size of the chunk is the maximum amount of bytes able
+         * to read in one call from the device.
+         * 
+         * @param The handle of the generator.
+         * @param Pointer where to store the chunk.
+         * @param Error reason upon failure to retrieve data.
+         * 
+         * @return The size of the chunk.
+         */
+        uint16_t GetChunk(FT_HANDLE handle, unsigned char *chunkBuffer, string* errorReason);
+
         private:
             vector<Generator> _generators;
             void makeErrorStr(string* errorReason, const char* format, ...);

@@ -47,8 +47,8 @@ int MeterFeeder::Generator::Read(UCHAR* dxData) {
 	DWORD bytesRxd = 0;
 
     // READ FROM DEVICE
-	FT_STATUS ftdiStatus = FT_Read(ftHandle_, dxData, 1, &bytesRxd);
-	if (ftdiStatus != FT_OK || bytesRxd != 1) {
+	FT_STATUS ftdiStatus = FT_Read(ftHandle_, dxData, MF_FT_READ_MAX_BYTES, &bytesRxd);
+	if (ftdiStatus != FT_OK || bytesRxd != MF_FT_READ_MAX_BYTES) {
 		return MF_DEVICE_ERROR;
 	}
 

@@ -7,8 +7,11 @@
 #pragma once
 
 #include "ftd2xx/ftd2xx.h"
+#include <bitset>
 
 #define MF_ERROR_STR_MAX_LEN 256
+
+#define MF_FT_READ_MAX_BYTES 1696
 
 // FTDI transport parameters
 enum {
@@ -30,3 +33,33 @@ enum {
 	MF_DEVICE_ERROR	= -1,
 	MF_OK,
 };
+
+//
+// https://www.techiedelight.com/count-set-bits-using-lookup-table/
+//
+
+// macros to generate the lookup table (at compile-time)
+#define B2(n) n, n + 1, n + 1, n + 2
+#define B4(n) B2(n), B2(n + 1), B2(n + 1), B2(n + 2)
+#define B6(n) B4(n), B4(n + 1), B4(n + 1), B4(n + 2)
+#define COUNT_BITS B6(0), B6(1), B6(1), B6(2)
+#define NUM_SET_BITS(n) bLookup[*n & 0xff] +  bLookup[(*(n+1) >> 8) & 0xff] + bLookup[(*(n+2) >> 16) & 0xff] + bLookup[(*(n+3) >> 24) & 0xff]
+
+// lookup-table to store the number of bits set for each index
+// in the table. The macro COUNT_BITS generates the table.
+inline unsigned int bLookup[256] = { COUNT_BITS };
+ 
+// Function to count number of set bits in n
+inline int numOfSetBits(UCHAR n)
+{
+    // print lookup table (number of bits set for integer i)
+    // for (int i = 0; i < 256; i++)
+    //    cout << i << " has " << lookup[i] << " bits\n";
+ 
+    // assuming 32-bit(4 byte) integer, break the integer into 8-bit chunks
+    // Note mask used 0xff is 11111111 in binary
+ 
+    int count = bLookup[n & 0xff];
+ 
+    return count;
+}
