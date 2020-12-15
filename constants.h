@@ -11,7 +11,7 @@
 
 #define MF_ERROR_STR_MAX_LEN 256
 
-#define MF_FT_READ_MAX_BYTES 1696
+#define MF_FT_READ_MAX_BYTES 512
 
 // FTDI transport parameters
 enum {
@@ -59,7 +59,8 @@ inline int numOfSetBits(UCHAR n)
     // assuming 32-bit(4 byte) integer, break the integer into 8-bit chunks
     // Note mask used 0xff is 11111111 in binary
  
-    int count = bLookup[n & 0xff];
- 
-    return count;
+    int numSetBits = bLookup[n & 0xff];
+	int numNotSetBits = 8 - numSetBits;
+	
+    return numSetBits - numNotSetBits;
 }

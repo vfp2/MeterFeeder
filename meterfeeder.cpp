@@ -9,6 +9,7 @@
 
 int main() {
 	using namespace MeterFeeder;
+	static int counter = 0;
 	Driver* driver = new Driver();
 	string errorReason = "";
 	if (!driver->Initialize(&errorReason)) {
@@ -30,13 +31,22 @@ int main() {
 			continue;
 		}
 
-		int fc = 0, j = 0;
-		for (j = 0; j < 1695; j++ ) {
-			fc += numOfSetBits(byte[j]);
+		int j = 0;
+		int ampFactor = 100;
+		for (j = 0; j < 512; j++ ) {
+			counter += numOfSetBits(byte[j]);
+			if (counter > (ampFactor - 1))
+			{
+				cout << 1 << endl;
+				counter = 0;
+			}
+			else if (counter < (1 - ampFactor)) {
+				cout << -1 << endl;
+				counter = 0;
+			}
 		}
-		fc += numOfSetBits(byte[++j]>>1);
 
-		cout << generator->GetSerialNumber() << " (" << generator->GetDescription() << "): " << fc << "/13568" << endl;
+		// cout << generator->GetSerialNumber() << " (" << generator->GetDescription() << "): " << fc << "/13568" << endl;
 	}
 	driver->Shutdown();
 }

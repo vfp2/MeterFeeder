@@ -180,17 +180,38 @@ extern "C" {
 		return buffer;
 	}
 
+	static int counter = 0;
+
 	// Get a byte of randomness.
-	DllExport int MF_GetBits(char* generatorSerialNumber, char* pErrorReason) {
+	DllExport int MF_GetBits(char* generatorSerialNumber, char* pErrorReason, int ampFactor) {
 		string errorReason = "";
 		Generator *generator = driver.FindGeneratorBySerial(generatorSerialNumber);
 		driver.GetByte(generator->GetHandle(), buffer, &errorReason);
 		std::strcpy(pErrorReason, errorReason.c_str());
- 		int fc = 0, i = 0;
-		for (i = 0; i < 1696; i++ ) {
-			fc += numOfSetBits(buffer[i]);
+ 		
+		// int fc = 0, i = 0;
+		// for (i = 0; i < MF_FT_READ_MAX_BYTES; i++ ) {
+		// 	fc += numOfSetBits(buffer[i]);
+		// }
+		// // fc += numOfSetBits(buffer[++i]>>1);
+		// return fc;
+
+		int j = 0;
+		for (j = 0; j < 512; j++) {
+			counter += numOfSetBits(buffer[j]);
+			if (counter > (ampFactor - 1 - 8) && counter < (ampFactor - 1)) {
+				return buffer[j] << 7;
+			} else if (counter > (1 - ampFactor) && counter < (1 - ampFactor + 8)) {
+				return buffer[j] << 7;
+			} else if (counter > (ampFactor - 1)) {
+				counter = 0;
+				return 1;
+			} else if (counter < (1 - ampFactor)) {
+				counter = 0;
+				return -1;
+			}
 		}
-		// fc += numOfSetBits(buffer[++i]>>1);
-		return fc;
+
+		return 0;
 	}
 }
