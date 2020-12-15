@@ -13,21 +13,21 @@ from matplotlib.animation import FuncAnimation
 
 # Config the Python<->C++ interface with MeterFeeder
 meter_feeder_lib = cdll.LoadLibrary(os.getcwd() + '/libmeterfeeder.dylib')
-meter_feeder_lib.Initialize.argtypes = c_char_p,
-meter_feeder_lib.Initialize.restype = c_int
-meter_feeder_lib.GetNumberGenerators.restype = c_int
-meter_feeder_lib.GetByte.argtypes = c_char_p, c_char_p,
-meter_feeder_lib.GetByte.restype = c_ubyte
+meter_feeder_lib.MF_Initialize.argtypes = c_char_p,
+meter_feeder_lib.MF_Initialize.restype = c_int
+meter_feeder_lib.MF_GetNumberGenerators.restype = c_int
+meter_feeder_lib.MF_GetByte.argtypes = c_char_p, c_char_p,
+meter_feeder_lib.MF_GetByte.restype = c_ubyte
 
 # Initialize the driver
 errorReason = create_string_buffer(256)
-result = meter_feeder_lib.Initialize(errorReason)
-print("MeterFeeder::Initialize: result: " + str(result) + ", errorReason:", errorReason.value)
+result = meter_feeder_lib.MF_Initialize(errorReason)
+print("MeterFeeder::MF_Initialize: result: " + str(result) + ", errorReason:", errorReason.value)
 if (len(errorReason.value) > 0):
     exit(result)
-result = meter_feeder_lib.GetNumberGenerators()
-print("MeterFeeder::GetNumberGenerators: result: " + str(result))
-# TODO: implement "MeterFeeder::GetListGenerators and dynamically get the serial numbers
+result = meter_feeder_lib.MF_GetNumberGenerators()
+print("MeterFeeder::MF_GetNumberGenerators: result: " + str(result))
+# TODO: implement "MeterFeeder::MF_GetListGenerators and dynamically get the serial numbers
 
 #
 # >>> Real-time graphing results
@@ -44,8 +44,8 @@ cy1, cy2 = 0, 0
 def update(frame):
     global cy1, cy2
 
-    y1 = meter_feeder_lib.GetByte(b"QWR4M004", errorReason) # TODO: enter your own serial number
-    y2 = meter_feeder_lib.GetByte(b"QWR4A003", errorReason) # TODO: enter your own serial number
+    y1 = meter_feeder_lib.MF_GetByte(b"QWR4M004", errorReason) # TODO: enter your own serial number
+    y2 = meter_feeder_lib.MF_GetByte(b"QWR4A003", errorReason) # TODO: enter your own serial number
     y1b = bin_array(y1)
     y2b = bin_array(y2)
     for i in range(8):
@@ -75,5 +75,5 @@ plt.show()
 #
 
 # Shutdown the driver
-meter_feeder_lib.Shutdown()
-print("MeterFeeder::Shutdown")
+meter_feeder_lib.MF_Shutdown()
+print("MeterFeeder::MF_Shutdown")
