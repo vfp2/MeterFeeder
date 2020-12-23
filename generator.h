@@ -58,11 +58,12 @@ namespace MeterFeeder {
             /**
              * Read in the streamed entropy.
              * 
+             * @param Length in bytes to read.
              * @param Pointer to where to store the streamed data (the random number).
              * 
              * @return MF_DEVICE_ERROR on error communicating with the generator.
              */
-            int Read(UCHAR* dxData);
+            int Read(int length, UCHAR* dxData);
 
             /**
              * Close the generator.

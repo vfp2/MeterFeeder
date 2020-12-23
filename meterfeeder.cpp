@@ -22,14 +22,19 @@ int main() {
 	}
 	for (int i = 0; i < generators->size(); i++) {
 		Generator *generator = &generators->at(i);
-		UCHAR byte;
-		driver->GetByte(generator->GetHandle(), &byte, &errorReason);
+		int len = 1;
+		UCHAR* bytes = (UCHAR*)malloc(len * sizeof(UCHAR));
+		driver->GetBytes(generator->GetHandle(), len, bytes, &errorReason);
 		if (errorReason.length() != 0) {
 			cout << errorReason << endl;
 			errorReason = ""; // reset error for next device
 			continue;
 		}
-		cout << generator->GetSerialNumber() << " (" << generator->GetDescription() << "): " << (int)byte << endl;
+		cout << generator->GetSerialNumber() << " (" << generator->GetDescription() << "): ";
+		for (int j = 0; j < len; j++) {
+			cout << (int)*(bytes+j) << " ";
+		}
+		cout << endl;
 	}
 	driver->Shutdown();
 }
