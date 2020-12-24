@@ -171,17 +171,17 @@ extern "C" {
 	}
 
 	// Get bytes of randomness.
-	DllExport unsigned char* MF_GetBytes(int length, char* generatorSerialNumber, char* pErrorReason) {
+	DllExport void MF_GetBytes(int length, unsigned char* buffer, char* generatorSerialNumber, char* pErrorReason) {
 		string errorReason = "";
 		Generator *generator = driver.FindGeneratorBySerial(generatorSerialNumber);
-		unsigned char* bytes;
-		driver.GetBytes(generator->GetHandle(), length, bytes, &errorReason);
+		driver.GetBytes(generator->GetHandle(), length, buffer, &errorReason);
 		std::strcpy(pErrorReason, errorReason.c_str());
-		return bytes;
 	}
 
 	// Get a byte of randomness.
 	DllExport unsigned char MF_GetByte(char* generatorSerialNumber, char* pErrorReason) {
-		return *MF_GetBytes(1, generatorSerialNumber, pErrorReason);
+		unsigned char byte;
+		MF_GetBytes(1, &byte, generatorSerialNumber, pErrorReason);
+		return byte;
 	}
 }
