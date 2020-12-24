@@ -2,3 +2,4 @@
 meterfeeder
 meterfeeder.dSYM/*
 libmeterfeeder.dylib*
+windows/*.dll
