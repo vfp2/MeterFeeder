@@ -1,5 +1,6 @@
 .DS_Store
 meterfeeder
+meterfeeder.exe
 meterfeeder.dSYM/*
 libmeterfeeder.dylib*
-windows/*.dll
+meterfeeder.dll
