@@ -76,11 +76,24 @@ namespace MeterFeeder {
         /**
          * Get a byte of randomness.
          * 
-         * @param The handle of the generator.
+         * @param Handle of the generator.
          * @param Pointer where to store the byte.
          * @param Error reason upon failure to retrieve data.
          */
-        void GetByte(FT_HANDLE handle, unsigned char *entropyByte, string* errorReason);
+        void GetByte(FT_HANDLE handle, unsigned char *entropyByte, string* errorReason) {
+            GetBytes(handle, 1, entropyByte, errorReason);
+        }
+
+        /**
+         * Get bytes of randomness.
+         * 
+         * @param Handle of the generator.
+         * @param Length in bytes to read.
+         * @param Pointer where to store the bytes.
+         * @param Error reason upon failure to retrieve data.
+         */
+        void GetBytes(FT_HANDLE handle, int length, unsigned char *entropyBytes, string* errorReason);
+
 
         private:
             vector<Generator> _generators;

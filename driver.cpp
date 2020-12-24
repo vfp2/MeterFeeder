@@ -79,7 +79,7 @@ vector<MeterFeeder::Generator>* MeterFeeder::Driver::GetListGenerators() {
 	return &_generators;
 };
 
-void MeterFeeder::Driver::GetByte(FT_HANDLE handle, unsigned char* entropyByte, string* errorReason) {
+void MeterFeeder::Driver::GetBytes(FT_HANDLE handle, int length, unsigned char* entropyBytes, string* errorReason) {
 	// Find the specified generator
 	Generator *generator = FindGeneratorByHandle(handle);
 	if (!generator) {
@@ -94,7 +94,7 @@ void MeterFeeder::Driver::GetByte(FT_HANDLE handle, unsigned char* entropyByte, 
 	}
 
 	// Read in the entropy
-	if (MF_DEVICE_ERROR == generator->Read(entropyByte)) {
+	if (MF_DEVICE_ERROR == generator->Read(length, entropyBytes)) {
 		makeErrorStr(errorReason, "Error reading in entropy from %s", generator->GetSerialNumber().c_str());
 		return;
 	}
@@ -170,13 +170,18 @@ extern "C" {
 		return nullptr; // TODO: implement
 	}
 
-	// Get a byte of randomness.
-	DllExport unsigned char MF_GetByte(char* generatorSerialNumber, char* pErrorReason) {
+	// Get bytes of randomness.
+	DllExport void MF_GetBytes(int length, unsigned char* buffer, char* generatorSerialNumber, char* pErrorReason) {
 		string errorReason = "";
 		Generator *generator = driver.FindGeneratorBySerial(generatorSerialNumber);
-		unsigned char byte = 1;
-		driver.GetByte(generator->GetHandle(), &byte, &errorReason);
+		driver.GetBytes(generator->GetHandle(), length, buffer, &errorReason);
 		std::strcpy(pErrorReason, errorReason.c_str());
+	}
+
+	// Get a byte of randomness.
+	DllExport unsigned char MF_GetByte(char* generatorSerialNumber, char* pErrorReason) {
+		unsigned char byte;
+		MF_GetBytes(1, &byte, generatorSerialNumber, pErrorReason);
 		return byte;
 	}
 }

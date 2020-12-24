@@ -43,12 +43,12 @@ int MeterFeeder::Generator::Stream() {
     return MF_OK;
 }
 
-int MeterFeeder::Generator::Read(UCHAR* dxData) {
+int MeterFeeder::Generator::Read(int length, UCHAR* dxData) {
 	DWORD bytesRxd = 0;
 
     // READ FROM DEVICE
-	FT_STATUS ftdiStatus = FT_Read(ftHandle_, dxData, 1, &bytesRxd);
-	if (ftdiStatus != FT_OK || bytesRxd != 1) {
+	FT_STATUS ftdiStatus = FT_Read(ftHandle_, dxData, length, &bytesRxd);
+	if (ftdiStatus != FT_OK || bytesRxd != length) {
 		return MF_DEVICE_ERROR;
 	}
 
