@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <cstring>
 #include <iostream>
 #include <stdarg.h>
 #include <string>
