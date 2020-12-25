@@ -22,7 +22,7 @@ bool MeterFeeder::Driver::Initialize(string* errorReason) {
 	}
 
 	// Open devices by serialNumber
-	for (int i = 0; i < numDevices; i++) {
+	for (DWORD i = 0; i < numDevices; i++) {
 		string serialNumber = devInfoList[i].SerialNumber;
 		serialNumber.resize(sizeof(devInfoList[i].SerialNumber));
 		FT_HANDLE ftHandle = devInfoList[i].ftHandle;
@@ -66,7 +66,7 @@ bool MeterFeeder::Driver::Initialize(string* errorReason) {
 
 void MeterFeeder::Driver::Shutdown() {
 	// Shutdown all generators
-	for (int i = 0; i < _generators.size(); i++) {
+	for (size_t i = 0; i < _generators.size(); i++) {
 		_generators[i].Close();
 	}
 };
@@ -101,7 +101,7 @@ void MeterFeeder::Driver::GetBytes(FT_HANDLE handle, int length, unsigned char* 
 };
 
 MeterFeeder::Generator* MeterFeeder::Driver::FindGeneratorByHandle(FT_HANDLE handle) {
-	for (int i = 0; i < _generators.size(); i++) {
+	for (size_t i = 0; i < _generators.size(); i++) {
 		if (_generators[i].GetHandle() == handle) {
 			return &_generators[i];
 		}
@@ -111,7 +111,7 @@ MeterFeeder::Generator* MeterFeeder::Driver::FindGeneratorByHandle(FT_HANDLE han
 };
 
 MeterFeeder::Generator* MeterFeeder::Driver::FindGeneratorBySerial(string serialNumber) {
-	for (int i = 0; i < _generators.size(); i++) {
+	for (size_t i = 0; i < _generators.size(); i++) {
 		if (_generators[i].GetSerialNumber() == serialNumber) {
 			return &_generators[i];
 		}

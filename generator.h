@@ -63,7 +63,7 @@ namespace MeterFeeder {
              * 
              * @return MF_DEVICE_ERROR on error communicating with the generator.
              */
-            int Read(int length, UCHAR* dxData);
+            int Read(DWORD length, UCHAR* dxData);
 
             /**
              * Close the generator.

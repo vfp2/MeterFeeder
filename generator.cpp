@@ -43,7 +43,7 @@ int MeterFeeder::Generator::Stream() {
     return MF_OK;
 }
 
-int MeterFeeder::Generator::Read(int length, UCHAR* dxData) {
+int MeterFeeder::Generator::Read(DWORD length, UCHAR* dxData) {
 	DWORD bytesRxd = 0;
 
     // READ FROM DEVICE
