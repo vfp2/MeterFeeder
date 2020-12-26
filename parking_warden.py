@@ -14,7 +14,8 @@ from matplotlib.animation import FuncAnimation
 # Config the Python<->C++ interface with MeterFeeder
 global meter_feeder_lib
 if os.name == 'nt':
-    meter_feeder_lib = cdll.LoadLibrary(os.getcwd() + '/meterfeeder.dll')
+    os.add_dll_directory(os.getcwd())
+    meter_feeder_lib = cdll.LoadLibrary('meterfeeder.dll')
 else:
     meter_feeder_lib = cdll.LoadLibrary(os.getcwd() + '/libmeterfeeder.dylib')
 meter_feeder_lib.MF_Initialize.argtypes = c_char_p,
