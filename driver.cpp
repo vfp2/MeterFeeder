@@ -133,11 +133,11 @@ void MeterFeeder::Driver::makeErrorStr(string* errorReason, const char* format, 
  * Code below for interfacing with MeterFeeder as a library
  */
 
-// #ifdef APPLE
+#ifdef APPLE
 	#define DllExport __attribute__((visibility("default")))
-// #else
-// 	#define DllExport _declspec (dllexport)
-// #endif
+#else
+ 	#define DllExport __declspec(dllexport)
+#endif
 
 extern "C" {
 	/**
