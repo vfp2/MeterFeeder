@@ -165,9 +165,17 @@ extern "C" {
 		return driver.GetNumberGenerators();
 	}
 
-  	/// Get the list of connected and successfully initialized generators.
-	DllExport vector<Generator>* MF_GetListGenerators() {
-		return nullptr; // TODO: implement
+  	// Get the list of connected and successfully initialized generators.
+	// Array element format: <serial number>|<description>
+	DllExport char* MF_GetListGenerators() {
+		char* pGenerators = new char[driver.GetNumberGenerators()]();
+		vector<Generator>* generators = driver.GetListGenerators();
+		for (int i = 0; i < driver.GetNumberGenerators(); i++) {
+			Generator generator = generators->at(i);
+			string fullGenDesc = generator.GetSerialNumber() + "|" + generator.GetDescription();
+			std::strcpy(&pGenerators[i], fullGenDesc.c_str());
+		}
+		return pGenerators;
 	}
 
 	// Get bytes of randomness.
