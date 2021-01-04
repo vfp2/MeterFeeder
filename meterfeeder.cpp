@@ -20,7 +20,7 @@ int main() {
 		cout << "No generators" << endl;
 		return -1;
 	}
-	for (int i = 0; i < generators->size(); i++) {
+	for (size_t i = 0; i < generators->size(); i++) {
 		Generator *generator = &generators->at(i);
 		int len = 1;
 		UCHAR* bytes = (UCHAR*)malloc(len * sizeof(UCHAR));
