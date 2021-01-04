@@ -108,7 +108,6 @@ def update(frame):
     plt.cla() # clear legend each draw
 
     ax.axhline(y=0, color='k')
-    # ax.axvline(x=0, color='k')
     
     # Max axis sizes
     plt.xlim(0, MAX_X_AXIS)
