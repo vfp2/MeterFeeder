@@ -99,7 +99,7 @@ def get_entropies(serialNumber):
                     walker.append(counter)
 
         fq[serialNumber].put(walker)
-        print("GB: " + str((datetime.datetime.now() - time_now)/1000))
+        print(str((datetime.datetime.now() - time_now)/1000))
 
 def handle_close(evt):
     # Shutdown the driver
@@ -126,9 +126,10 @@ def update(frame):
     for key, value in devices.items():
         # Plot from the queue
         plt.plot(fq[key].get(), 'r-', label=key + " " + value)
+        print("\t\t\t: " + str(fq[key].qsize()))
 
     plt.legend(loc=2)
-    print("\t\t\tPL: " + str((datetime.datetime.now() - stime_now)/1000))
+    print("\t\t\t: " + str((datetime.datetime.now() - stime_now)/1000))
 
 if __name__ == "__main__":
     # Init stuff
