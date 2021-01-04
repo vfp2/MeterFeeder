@@ -57,9 +57,3 @@ $ python parking_warden.py
 ```
 
 ![ScreenShot](https://raw.github.com/vfp2/MeterFeeder/master/pw_screenshot.png)
-
-###
-
-## More info
-
-The MED devices are based on the FTDI chipset and require the FTD2XX driver (only the Mac version is bundled at the moment in this repo), along with libusb. One day I'll get around to getting it tested and running on Linux and Windows. If you feel like trying it yourself then please do so and throw us a pull request.
