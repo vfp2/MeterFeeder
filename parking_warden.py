@@ -27,6 +27,10 @@ fq = {}
 # List of connected devices with serial numbers (key) and descriptions (value)
 devices = {}
 
+# Maximum and minimum graphed walk bounds per device
+maxs = {}
+mins = {}
+
 def load_library():
     # Load the MeterFeeter library
     global METER_FEEDER_LIB
@@ -63,6 +67,8 @@ def get_devices():
     for i in range(numGenerators):
         kvs = generatorsList[i].split("|")
         devices[kvs[0]] = kvs[1]
+        mins[kvs[0]] = 0
+        maxs[kvs[0]] = 0
         print("\t" + str(kvs[0]) + "->" + kvs[1])
 
 def bin_array(num): # source: https://stackoverflow.com/a/47521145/1103264
@@ -94,9 +100,13 @@ def get_entropies(serialNumber):
                 if (bits[i] == 1):
                     counter += 1
                     walker.append(counter)
+                    if (counter > maxs[serialNumber]):
+                        maxs[serialNumber] = counter
                 else:
                     counter -= 1
                     walker.append(counter)
+                    if (counter < mins[serialNumber]):
+                        mins[serialNumber] = counter
 
         fq[serialNumber].put(walker)
         print(str((datetime.datetime.now() - time_now)/1000))
@@ -129,7 +139,7 @@ def update(frame):
             plt.xlim(0, MAX_X_AXIS)
             plt.ylim([-2000, 2000])
 
-            plt.plot(fq[key].get(), 'r-', label=key + " " + value)
+            plt.plot(fq[key].get(), 'r-', label=key + " " + value + " [" + str(mins[key]) + "," + str(maxs[key]) + "]")
 
     plt.legend(loc=2)
     print("\t\t\t: " + str((datetime.datetime.now() - stime_now)/1000))
