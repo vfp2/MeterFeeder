@@ -17,9 +17,11 @@ import queue
 import datetime 
 
 # Number of bytes of randomness to get per read call on a device
-ENTROPY_BUFFER_LEN = 1024
+ENTROPY_BUFFER_LEN = 256
 
-MAX_X_AXIS = 500000
+MAX_X_AXIS = 150000
+
+GRAPH_LINE_COLORS = ('b-','g-','r-','c-','m-','y-','k-','w-') # implicit max of 8 devices max TODO: need support for more??
 
 # FIFO queue for random bits read in from devices
 fq = {}
@@ -81,7 +83,7 @@ def get_entropies(serialNumber):
     print(threading.currentThread().getName(), "entropy gathering thread starting")
 
     # Read in entropy from MED device
-    fq[serialNumber] = queue.Queue()
+    fq[serialNumber] = queue.Queue(1)
     ubuffer = (c_ubyte * ENTROPY_BUFFER_LEN).from_buffer(bytearray(ENTROPY_BUFFER_LEN))
     counter = 0
     walker = []
@@ -124,24 +126,24 @@ def update(frame):
     global stime_now
     stime_now = datetime.datetime.now()
 
+    # Clear legend each draw
+    plt.cla()
+
+    # y=0 axis
+    ax.axhline(y=0, color='k')
+    
+    # Max axis sizes
+    plt.xlim(0, MAX_X_AXIS)
+    plt.ylim([-2000, 2000])
+
     # Graph entropy in the FIFO queue(s)
+    ci = 0 # color index
     for key, value in devices.items():
         # Plot from the queue
-        print("\t\t\t: " + str(fq[key].qsize()))
-        while fq[key].qsize() > 0:
-            # Clear legend each draw
-            plt.cla()
+        plt.plot(fq[key].get(), GRAPH_LINE_COLORS[ci], label=key + " " + value + " [" + str(mins[key]) + "," + str(maxs[key]) + "]")
+        ci += 1
+        plt.legend(loc=2)
 
-            # y=0 axis
-            ax.axhline(y=0, color='k')
-            
-            # Max axis sizes
-            plt.xlim(0, MAX_X_AXIS)
-            plt.ylim([-2000, 2000])
-
-            plt.plot(fq[key].get(), 'r-', label=key + " " + value + " [" + str(mins[key]) + "," + str(maxs[key]) + "]")
-
-    plt.legend(loc=2)
     print("\t\t\t: " + str((datetime.datetime.now() - stime_now)/1000))
 
 if __name__ == "__main__":
