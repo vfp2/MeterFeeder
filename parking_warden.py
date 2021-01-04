@@ -28,10 +28,10 @@ devices = {}
 def load_library():
     # Load the MeterFeeter library
     global METER_FEEDER_LIB
-    if os.name == 'nt':
+    if os.name == 'nt': # windows
         os.add_dll_directory(os.getcwd())
         METER_FEEDER_LIB = cdll.LoadLibrary('meterfeeder.dll')
-    else:
+    else: # mac. TODO: add linux one day
         METER_FEEDER_LIB = cdll.LoadLibrary(os.getcwd() + '/libmeterfeeder.dylib')
     METER_FEEDER_LIB.MF_Initialize.argtypes = c_char_p,
     METER_FEEDER_LIB.MF_Initialize.restype = c_int
@@ -39,10 +39,11 @@ def load_library():
     # METER_FEEDER_LIB.MF_GetListGenerators.argtypes = [POINTER(c_char_p)]
     METER_FEEDER_LIB.MF_GetBytes.argtypes = c_int, POINTER(c_ubyte), c_char_p, c_char_p,
 
+    # Make driver initialize all the connected devices
     global errorReason
     errorReason = create_string_buffer(256)
     result = METER_FEEDER_LIB.MF_Initialize(errorReason)
-    print("MeterFeeder::MF_Initialize: result: " + str(result) + ", errorReason:", errorReason.value)
+    print("MeterFeeder::MF_Initialize: result: " + str(result) + ", errorReason: ", errorReason.value)
     if (len(errorReason.value) > 0):
         exit(result)
 
@@ -71,12 +72,13 @@ def get_entropies(serialNumber):
 
     print(threading.currentThread().getName(), "entropy gathering thread starting")
 
+    # Read in entropy from MED device
     fq[serialNumber] = queue.Queue()
     ubuffer = (c_ubyte * ENTROPY_BUFFER_LEN).from_buffer(bytearray(ENTROPY_BUFFER_LEN))
     counter = 0
     walker = []
 
-    while True:
+    while True: # continually read in entropy
         # Reset graph
         if (len(walker) > MAX_X_AXIS):
             walker.clear()
@@ -107,12 +109,14 @@ def handle_close(evt):
 def update(frame):
     plt.cla() # clear legend each draw
 
+    # y=0 axis
     ax.axhline(y=0, color='k')
     
     # Max axis sizes
     plt.xlim(0, MAX_X_AXIS)
     plt.ylim([-2000, 2000])
 
+    # Graph entropy in the FIFO queue(s)
     for key, value in devices.items():
         # Plot from the queue
         plt.plot(fq[key].get(), 'r-', label=key + " " + value)
@@ -120,14 +124,17 @@ def update(frame):
     plt.legend(loc=2)
 
 if __name__ == "__main__":
+    # Init stuff
     load_library()
     get_devices()
 
+    # Spawn individual threads for each connected devices to read in the entropy
     for key, value in devices.items():
         w = threading.Thread(name=key, target=get_entropies, args=(key,))
         w.daemon = True
         w.start()
 
+    # Setup graph and call to frame update function
     fig, ax = plt.subplots()
     fig.canvas.mpl_connect('close_event', handle_close)
     ani = FuncAnimation(fig, update, interval=10)
