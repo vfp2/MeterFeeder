@@ -9,6 +9,7 @@ import sys
 import platform
 from ctypes import *
 import numpy as np
+import matplotlib.backends.backend_tkagg
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import threading

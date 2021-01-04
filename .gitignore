@@ -4,3 +4,4 @@ meterfeeder.exe
 meterfeeder.dSYM/*
 libmeterfeeder.dylib*
 meterfeeder.dll
+dist
