@@ -5,7 +5,7 @@
  ##
 
 import os
-import signal
+import sys
 import platform
 from ctypes import *
 import numpy as np
@@ -102,7 +102,7 @@ def handle_close(evt):
     # There's no doubt a more graceful way to quit but matplotlib turned out to be not thread safe and
     # I didn't intend to spend more than 2 hours look into ways to make it's window's X button nicely
     # stop the entropy-collecting thread
-    os.kill(os.getpid(),signal.SIGKILL)
+    sys.exit()
 
 def update(frame):
     plt.cla() # clear legend each draw
@@ -124,7 +124,9 @@ if __name__ == "__main__":
     get_devices()
 
     for key, value in devices.items():
-        threading.Thread(name=key, target=get_entropies, args=(key,)).start()
+        w = threading.Thread(name=key, target=get_entropies, args=(key,))
+        w.daemon = True
+        w.start()
 
     fig, ax = plt.subplots()
     fig.canvas.mpl_connect('close_event', handle_close)
