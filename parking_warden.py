@@ -17,7 +17,7 @@ import queue
 import datetime 
 
 # Number of bytes of randomness to get per read call on a device
-ENTROPY_BUFFER_LEN = 512
+ENTROPY_BUFFER_LEN = 1024
 
 MAX_X_AXIS = 500000
 
@@ -111,22 +111,25 @@ def handle_close(evt):
     sys.exit()
 
 def update(frame):
-    plt.cla() # clear legend each draw
     global stime_now
     stime_now = datetime.datetime.now()
-
-    # y=0 axis
-    ax.axhline(y=0, color='k')
-    
-    # Max axis sizes
-    plt.xlim(0, MAX_X_AXIS)
-    plt.ylim([-2000, 2000])
 
     # Graph entropy in the FIFO queue(s)
     for key, value in devices.items():
         # Plot from the queue
-        plt.plot(fq[key].get(), 'r-', label=key + " " + value)
         print("\t\t\t: " + str(fq[key].qsize()))
+        while fq[key].qsize() > 0:
+            # Clear legend each draw
+            plt.cla()
+
+            # y=0 axis
+            ax.axhline(y=0, color='k')
+            
+            # Max axis sizes
+            plt.xlim(0, MAX_X_AXIS)
+            plt.ylim([-2000, 2000])
+
+            plt.plot(fq[key].get(), 'r-', label=key + " " + value)
 
     plt.legend(loc=2)
     print("\t\t\t: " + str((datetime.datetime.now() - stime_now)/1000))
