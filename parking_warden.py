@@ -14,6 +14,8 @@ from matplotlib.animation import FuncAnimation
 import threading
 import queue
 
+import datetime 
+
 # Number of bytes of randomness to get per read call on a device
 ENTROPY_BUFFER_LEN = 512
 
@@ -83,6 +85,7 @@ def get_entropies(serialNumber):
         if (len(walker) > MAX_X_AXIS):
             walker.clear()
 
+        time_now = datetime.datetime.now()
         METER_FEEDER_LIB.MF_GetBytes(ENTROPY_BUFFER_LEN, ubuffer, serialNumber.encode("utf-8"), errorReason)
         for i in range(ENTROPY_BUFFER_LEN):
             # print(ubuffer[i])
@@ -96,6 +99,7 @@ def get_entropies(serialNumber):
                     walker.append(counter)
 
         fq[serialNumber].put(walker)
+        print("GB: " + str((datetime.datetime.now() - time_now)/1000))
 
 def handle_close(evt):
     # Shutdown the driver
@@ -108,6 +112,8 @@ def handle_close(evt):
 
 def update(frame):
     plt.cla() # clear legend each draw
+    global stime_now
+    stime_now = datetime.datetime.now()
 
     # y=0 axis
     ax.axhline(y=0, color='k')
@@ -122,6 +128,7 @@ def update(frame):
         plt.plot(fq[key].get(), 'r-', label=key + " " + value)
 
     plt.legend(loc=2)
+    print("\t\t\tPL: " + str((datetime.datetime.now() - stime_now)/1000))
 
 if __name__ == "__main__":
     # Init stuff
