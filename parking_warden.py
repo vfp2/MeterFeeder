@@ -17,9 +17,11 @@ import queue
 import datetime 
 
 # Number of bytes of randomness to get per read call on a device
-ENTROPY_BUFFER_LEN = 1024
+ENTROPY_BUFFER_LEN = 128
 
-MAX_X_AXIS = 500000
+MAX_X_AXIS = 50000
+
+GRAPH_LINE_COLORS = ('b-','g-','r-','c-','m-','y-','k-','w-') # implicit max of 8 devices max TODO: need support for more??
 
 # FIFO queue for random bits read in from devices
 fq = {}
@@ -69,6 +71,11 @@ def get_devices():
         devices[kvs[0]] = kvs[1]
         mins[kvs[0]] = 0
         maxs[kvs[0]] = 0
+
+        devices["QWR4A003x"] = kvs[1]
+        mins["QWR4A003x"] = 0
+        maxs["QWR4A003x"] = 0
+        
         print("\t" + str(kvs[0]) + "->" + kvs[1])
 
 def bin_array(num): # source: https://stackoverflow.com/a/47521145/1103264
@@ -76,20 +83,25 @@ def bin_array(num): # source: https://stackoverflow.com/a/47521145/1103264
     return np.array(list(np.binary_repr(num).zfill(8))).astype(np.int8)
 
 def get_entropies(serialNumber):
+    if (serialNumber == "QWR4A003x"):
+        return
     global METER_FEEDER_LIB
 
     print(threading.currentThread().getName(), "entropy gathering thread starting")
 
     # Read in entropy from MED device
-    fq[serialNumber] = queue.Queue()
+    fq[serialNumber] = queue.Queue(1)
+    fq["QWR4A003x"] = queue.Queue(1)
     ubuffer = (c_ubyte * ENTROPY_BUFFER_LEN).from_buffer(bytearray(ENTROPY_BUFFER_LEN))
     counter = 0
     walker = []
+    walker2 = []
 
     while True: # continually read in entropy
         # Reset graph
         if (len(walker) > MAX_X_AXIS):
             walker.clear()
+            walker2.clear()
 
         time_now = datetime.datetime.now()
         METER_FEEDER_LIB.MF_GetBytes(ENTROPY_BUFFER_LEN, ubuffer, serialNumber.encode("utf-8"), errorReason)
@@ -100,15 +112,18 @@ def get_entropies(serialNumber):
                 if (bits[i] == 1):
                     counter += 1
                     walker.append(counter)
+                    walker2.append(-counter)
                     if (counter > maxs[serialNumber]):
                         maxs[serialNumber] = counter
                 else:
                     counter -= 1
                     walker.append(counter)
+                    walker2.append(-counter)
                     if (counter < mins[serialNumber]):
                         mins[serialNumber] = counter
 
         fq[serialNumber].put(walker)
+        fq["QWR4A003x"].put(walker2)
         print(str((datetime.datetime.now() - time_now)/1000))
 
 def handle_close(evt):
@@ -124,24 +139,31 @@ def update(frame):
     global stime_now
     stime_now = datetime.datetime.now()
 
+    plt.cla()
+
     # Graph entropy in the FIFO queue(s)
+    ci = 0 # color index
     for key, value in devices.items():
+        # key="QWR4A003"
         # Plot from the queue
         print("\t\t\t: " + str(fq[key].qsize()))
-        while fq[key].qsize() > 0:
-            # Clear legend each draw
-            plt.cla()
+        # while fq[key].qsize() > 0:
+        # Clear legend each draw
+        # plt.cla()
 
-            # y=0 axis
-            ax.axhline(y=0, color='k')
-            
-            # Max axis sizes
-            plt.xlim(0, MAX_X_AXIS)
-            plt.ylim([-2000, 2000])
+        # y=0 axis
+        ax.axhline(y=0, color='k')
+        
+        # # Max axis sizes
+        plt.xlim(0, MAX_X_AXIS)
+        plt.ylim([-2000, 2000])
 
-            plt.plot(fq[key].get(), 'r-', label=key + " " + value + " [" + str(mins[key]) + "," + str(maxs[key]) + "]")
+        plt.plot(fq[key].get(), GRAPH_LINE_COLORS[ci], label=key + " " + value + " [" + str(mins[key]) + "," + str(maxs[key]) + "]")
+        # plt.plot(fq[key].get(), GRAPH_LINE_COLORS[ci])
+        
+        ci += 1
 
-    plt.legend(loc=2)
+        plt.legend(loc=2)
     print("\t\t\t: " + str((datetime.datetime.now() - stime_now)/1000))
 
 if __name__ == "__main__":
