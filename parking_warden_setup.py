@@ -1,6 +1,5 @@
 from distutils.core import setup
-import py2exe
-import matplotlib
+import py2exe # pip install matplotlib==3.2.2 else error
 import matplotlib.pyplot
 import matplotlib.animation
 import numpy

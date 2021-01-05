@@ -15,7 +15,7 @@ from matplotlib.animation import FuncAnimation
 import threading
 import queue
 
-import datetime 
+import datetime
 
 # Number of bytes of randomness to get per read call on a device
 ENTROPY_BUFFER_LEN = 256
@@ -38,7 +38,6 @@ def load_library():
     # Load the MeterFeeter library
     global METER_FEEDER_LIB
     if os.name == 'nt': # windows
-        os.add_dll_directory(os.getcwd())
         METER_FEEDER_LIB = cdll.LoadLibrary('meterfeeder.dll')
     else: # mac. TODO: add linux one day
         METER_FEEDER_LIB = cdll.LoadLibrary(os.getcwd() + '/libmeterfeeder.dylib')
