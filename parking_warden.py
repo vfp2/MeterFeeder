@@ -140,7 +140,9 @@ def update(frame):
     ci = 0 # color index
     for key, value in devices.items():
         # Plot from the queue
-        plt.plot(fq[key].get(), GRAPH_LINE_COLORS[ci], label=key + " " + value + " [" + str(mins[key]) + "," + str(maxs[key]) + "]")
+        ys = fq[key].get()
+        lastY = ys[-1]
+        plt.plot(ys, GRAPH_LINE_COLORS[ci], label=key + " " + value + " [" + str(mins[key]) + "," + str(maxs[key]) + "," + str(lastY) +"]")
         ci += 1
         plt.legend(loc=2)
 
