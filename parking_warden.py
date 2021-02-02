@@ -6,6 +6,7 @@
 
 import os
 import sys
+import time
 import platform
 from ctypes import *
 import numpy as np
@@ -83,7 +84,7 @@ def get_entropies(serialNumber):
     print(threading.currentThread().getName(), "entropy gathering thread starting")
 
     # Read in entropy from MED device
-    fq[serialNumber] = queue.Queue(1)
+    fq[serialNumber] = queue.Queue()
     ubuffer = (c_ubyte * ENTROPY_BUFFER_LEN).from_buffer(bytearray(ENTROPY_BUFFER_LEN))
     counter = 0
     walker = []
@@ -93,7 +94,7 @@ def get_entropies(serialNumber):
         if (len(walker) > MAX_X_AXIS):
             walker.clear()
 
-        time_now = datetime.datetime.now()
+        tic = time.perf_counter()
         METER_FEEDER_LIB.MF_GetBytes(ENTROPY_BUFFER_LEN, ubuffer, serialNumber.encode("utf-8"), errorReason)
         for i in range(ENTROPY_BUFFER_LEN):
             # print(ubuffer[i])
@@ -111,7 +112,7 @@ def get_entropies(serialNumber):
                         mins[serialNumber] = counter
 
         fq[serialNumber].put(walker)
-        print(str((datetime.datetime.now() - time_now)/1000))
+        print(f"{time.perf_counter() - tic:0.4f}s")
 
 def handle_close(evt):
     # Shutdown the driver
@@ -124,7 +125,7 @@ def handle_close(evt):
 
 def update(frame):
     global stime_now
-    stime_now = datetime.datetime.now()
+    stime_now = time.perf_counter()
 
     # Clear legend each draw
     plt.cla()
@@ -142,11 +143,12 @@ def update(frame):
         # Plot from the queue
         ys = fq[key].get()
         lastY = ys[-1]
+        # print(f"\t\t\t: ys len:{len(ys)}")
         plt.plot(ys, GRAPH_LINE_COLORS[ci], label=key + " " + value + " [" + str(mins[key]) + "," + str(maxs[key]) + "," + str(lastY) +"]")
         ci += 1
         plt.legend(loc=2)
 
-    print("\t\t\t: " + str((datetime.datetime.now() - stime_now)/1000))
+    print(f"\t\t\t: {time.perf_counter() - stime_now:0.4f}s")
 
 if __name__ == "__main__":
     # Init stuff
