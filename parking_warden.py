@@ -83,6 +83,8 @@ def get_entropies(serialNumber):
 
     print(threading.currentThread().getName(), "entropy gathering thread starting")
 
+    print("READ TIME\t\tDRAW TIME")
+
     # Read in entropy from MED device
     fq[serialNumber] = queue.Queue()
     ubuffer = (c_ubyte * ENTROPY_BUFFER_LEN).from_buffer(bytearray(ENTROPY_BUFFER_LEN))
