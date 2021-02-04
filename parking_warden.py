@@ -112,7 +112,7 @@ def get_entropies(serialNumber):
                         mins[serialNumber] = counter
 
         fq[serialNumber].put(walker)
-        print(f"{time.perf_counter() - tic:0.4f}s")
+        print(f"{(time.perf_counter() - tic)*1000:0.0f}ms")
 
 def handle_close(evt):
     # Shutdown the driver
@@ -148,7 +148,8 @@ def update(frame):
         ci += 1
         plt.legend(loc=2)
 
-    print(f"\t\t\t: {time.perf_counter() - stime_now:0.4f}s")
+    print(f"\t\t\t{(time.perf_counter() - stime_now)*1000:0.0f}ms")
+
 
 if __name__ == "__main__":
     # Init stuff
