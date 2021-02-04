@@ -1,8 +1,8 @@
 # MeterFeeder & Parking Warden
 
-**MeterFeeder** is a C++ driver library that allows you to read in random bytes simultaneously from [Core Invention](https://coreinvention.com/)'s MED (Mind Enabled Drive) quantum random number generator USB devices. Read the comment in generator.h for more of a description or MED_DEVICES.md for a list of the different type of MED devices available.
+**MeterFeeder** is a C++ driver library that allows you to read in random bytes simultaneously from [Core Invention](https://coreinvention.com/)'s MED (Mind-Enabled Drive) quantum random number generator USB devices. Read the comment in generator.h for more of a description or MED_DEVICES.md for a list of the different type of MED devices available.
 
-**Parking Warden** is a work-in-progress (consider it a buggy early alpha) Python wrapper around MeterFeeder library that graphs the output of these devices.
+**Parking Warden** is a work-in-progress (consider it in beta) Python wrapper around MeterFeeder library that graphs the output of these devices. The objective of this tool is to be able to compare the responsiveness of multiple types of MED devices in an MMI (mind/matter interaction) context.
 
 ## TL;DR; I just want to run it!
 
@@ -48,12 +48,23 @@ QWR4M004 (QNG Model PQ4000KU): 153
 
 ### To run Parking Warden
 
-Currently the alpha doesn't properly implement MeterFeeder's ability to read in the serial numbers of all the USB devices connected and they're hardcoded so I suggest compiling and running meterfeeder above, get your serial numbers (QWR4XXXX) and update them with the device descriptions in lines 47,48,65,66 of parking_warden.py. The Python script is configured for 2 devices at the moment but you can change the yNdata/cyN/yN/yNb related code relative to how many (N) devices you have plugged in. Assuming you have 2 like myself;
-
 ```bash
 $ pip install numpy matplotlib
 $ ./build-mac-dylib.sh
 $ python parking_warden.py
 ```
+
+#### To build a self contained EXE (to run on Windows)
+
+We found that Python 3.9 wasn't supposed on Windows 7/64-bit, so we settled for 3.8.7. You will have to get your Visual Studio environment setup properly for C++ compiling like making sure the PATH environment variable is setup correctly.
+
+```DOS
+C:>build-win-dylib.bat
+C:>python parking_warden_setup.py py2exe
+```
+
+Copy meterfeeder.dll and ftd2xx.dll to dist\ and then run dist\parking_warden.exe.
+
+
 
 ![ScreenShot](https://raw.github.com/vfp2/MeterFeeder/master/pw_screenshot.png)
