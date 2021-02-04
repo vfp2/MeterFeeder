@@ -21,7 +21,7 @@ import datetime
 # Number of bytes of randomness to get per read call on a device
 ENTROPY_BUFFER_LEN = 1024
 
-MAX_X_AXIS = 150000
+MAX_X_AXIS = 300000
 
 GRAPH_LINE_COLORS = ('b-','g-','r-','c-','m-','y-','k-','w-') # implicit max of 8 devices max TODO: need support for more??
 
