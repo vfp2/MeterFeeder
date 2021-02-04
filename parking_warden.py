@@ -19,7 +19,7 @@ import queue
 import datetime
 
 # Number of bytes of randomness to get per read call on a device
-ENTROPY_BUFFER_LEN = 256
+ENTROPY_BUFFER_LEN = 1024
 
 MAX_X_AXIS = 150000
 
