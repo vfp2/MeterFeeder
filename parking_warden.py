@@ -144,6 +144,8 @@ def update(frame):
     for key, value in devices.items():
         # Plot from the queue
         ys = fq[key].get()
+        if (len(ys)) == 0:
+            continue
         lastY = ys[-1]
         # print(f"\t\t\t: ys len:{len(ys)}")
         plt.plot(ys, GRAPH_LINE_COLORS[ci], label=key + " " + value + " [" + str(mins[key]) + "," + str(maxs[key]) + "," + str(lastY) +"]")
