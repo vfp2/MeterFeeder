@@ -13,6 +13,7 @@ import numpy as np
 import matplotlib.backends.backend_tkagg
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+from matplotlib.widgets import Button
 import threading
 import queue
 
@@ -34,6 +35,8 @@ devices = {}
 # Maximum and minimum graphed walk bounds per device
 maxs = {}
 mins = {}
+
+cont_mode_reset = False
 
 def load_library():
     # Load the MeterFeeter library
@@ -80,6 +83,7 @@ def bin_array(num): # source: https://stackoverflow.com/a/47521145/1103264
 
 def get_entropies(serialNumber):
     global METER_FEEDER_LIB
+    global cont_mode_reset
 
     print(threading.currentThread().getName(), "entropy gathering thread starting")
 
@@ -92,9 +96,13 @@ def get_entropies(serialNumber):
     walker = []
 
     while True: # continually read in entropy
-        # Reset graph
+        # Reset graph conditions
         if (len(walker) > MAX_X_AXIS):
             walker.clear()
+        if (cont_mode_reset == True): # TODO: this wont work with multi devices as first thread to set to false will cause other devices not to reset
+            cont_mode_reset = False
+            walker.clear()
+            counter = 0
 
         tic = time.perf_counter()
         METER_FEEDER_LIB.MF_GetBytes(ENTROPY_BUFFER_LEN, ubuffer, serialNumber.encode("utf-8"), errorReason)
@@ -116,7 +124,7 @@ def get_entropies(serialNumber):
         fq[serialNumber].put(walker)
         print(f"{(time.perf_counter() - tic)*1000:0.0f}ms")
 
-def handle_close(evt):
+def handle_close(event):
     # Shutdown the driver
     METER_FEEDER_LIB.MF_Shutdown()
 
@@ -125,19 +133,26 @@ def handle_close(evt):
     # stop the entropy-collecting thread
     sys.exit()
 
+def cont_mode_reset_callback(event):
+    global cont_mode_reset
+    cont_mode_reset = True
+
+def user_init_mode_grab_callback(event):
+    print("TODO: implement user-initiated mode")
+
 def update(frame):
     global stime_now
     stime_now = time.perf_counter()
 
     # Clear legend each draw
-    plt.cla()
+    ax.cla()
 
     # y=0 axis
     ax.axhline(y=0, color='k')
     
     # Max axis sizes
-    plt.xlim(0, MAX_X_AXIS)
-    plt.ylim([-2000, 2000])
+    ax.set_xlim(0, MAX_X_AXIS)
+    ax.set_ylim(-2000, 2000)
 
     # Graph entropy in the FIFO queue(s)
     ci = 0 # color index
@@ -148,12 +163,11 @@ def update(frame):
             continue
         lastY = ys[-1]
         # print(f"\t\t\t: ys len:{len(ys)}")
-        plt.plot(ys, GRAPH_LINE_COLORS[ci], label=key + " " + value + " [" + str(mins[key]) + "," + str(maxs[key]) + "," + str(lastY) +"]")
+        ax.plot(ys, GRAPH_LINE_COLORS[ci], label=key + " " + value + " [" + str(mins[key]) + "," + str(maxs[key]) + "," + str(lastY) +"]")
         ci += 1
-        plt.legend(loc=2)
+        ax.legend(loc=2)
 
     print(f"\t\t\t{(time.perf_counter() - stime_now)*1000:0.0f}ms")
-
 
 if __name__ == "__main__":
     # Init stuff
@@ -167,7 +181,19 @@ if __name__ == "__main__":
         w.start()
 
     # Setup graph and call to frame update function
-    fig, ax = plt.subplots()
-    fig.canvas.mpl_connect('close_event', handle_close)
+    fig = plt.figure()
+    fig.canvas.mpl_connect('close_event', handle_close) # For when pressing X to close window
+    ax = fig.add_subplot(111, xlim=(0, MAX_X_AXIS), ylim=(-2000, 2000))
+
+    # Button to reset graph in continuous mode or to toggle back into continuous mode from user-initiated mode
+    cont_mode_btn_ax = fig.add_axes((0.12, 0.01, 0.28, 0.04))
+    cont_mode_btn = Button(cont_mode_btn_ax, 'Continuous Mode/Reset')
+    cont_mode_btn.on_clicked(cont_mode_reset_callback)
+
+    # Button to toggle to user-initiated mode or grab entropy upon button presses (when already in user-initiated mode)
+    user_init_mode_btn_ax = fig.add_axes((0.61, 0.01, 0.29, 0.04))
+    user_init_mode_btn = Button(user_init_mode_btn_ax, 'User-initiated Mode/Grab')
+    user_init_mode_btn.on_clicked(user_init_mode_grab_callback)
+    
     ani = FuncAnimation(fig, update, interval=10)
     plt.show()
