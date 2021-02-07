@@ -118,12 +118,17 @@ def get_entropies(serialNumber):
         elif (mode != 3 and control_message == 4): # toggle into user-initiated mode
             mode = thread_messages[serialNumber] = 3
             fq[serialNumber].empty()
+            mins[serialNumber] = 0
+            maxs[serialNumber] = 0
             walker.clear()
             counter = 0
             print(serialNumber + " toggled to user-initiated mode")
             continue # press once more for a grab
         elif (control_message == 2): # continuous mode reset
             mode = thread_messages[serialNumber] = 1 # continuous mode toggle
+            fq[serialNumber].empty()
+            mins[serialNumber] = 0
+            maxs[serialNumber] = 0
             walker.clear()
             counter = 0
             print(serialNumber + " continuous mode toggled/resetted")
