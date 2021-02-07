@@ -40,6 +40,7 @@ devices = {}
 # 2 - continuous mode reset
 # 3 - user-initiated mode toggle
 # 4 - user-initiated mode grab
+# 5 - uset-initiated mode reset
 thread_messages = {} 
 
 # Maximum and minimum graphed walk bounds per device
@@ -126,6 +127,13 @@ def run_trials(serialNumber):
             thread_messages[serialNumber] = 3
             print(serialNumber + " doing grab")
             # ... continue below and do 1 grab (entropy reading/processing)
+        elif (mode == 3 and control_message == 5): # in user-initiated mode with reset command
+            thread_messages[serialNumber] = 3
+            walker.clear()
+            counter = 0
+            fq[serialNumber].put_nowait(walker)
+            print(serialNumber + " doing user-initiated mode reset")
+            # ... continue below and do 1 grab (entropy reading/processing)
         elif (mode != 3 and control_message == 4): # toggle into user-initiated mode
             mode = thread_messages[serialNumber] = 3
             ubuffer = ubuffer_user_init_mode
@@ -177,6 +185,8 @@ def handle_close(event):
 def handle_key_press(event):
     if event.key == ' ':
         user_init_mode_grab_callback(event)
+    elif event.key == 'r' or event.key == 'R':
+        user_init_mode_resset_callback(event)
 
 def cont_mode_reset_callback(event):
     # Message each device's message thread to reset/toggle its continuous mode
@@ -187,6 +197,11 @@ def user_init_mode_grab_callback(event):
     # Message each device's message thread to grab/toggle its user-initiated mode
     for key in devices.keys():
         thread_messages[key] = 4
+
+def user_init_mode_resset_callback(event):
+    # Message each device's message thread to reset its user-initiated mode
+    for key in devices.keys():
+        thread_messages[key] = 5
 
 def update(frame):
     global stime_now
