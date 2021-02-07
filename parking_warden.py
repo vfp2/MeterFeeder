@@ -20,7 +20,8 @@ import queue
 import datetime
 
 # Number of bytes of randomness to get per read call on a device
-ENTROPY_BUFFER_LEN = 1024
+ENTROPY_BUFFER_LEN_CONT_MODE = 1024
+ENTROPY_BUFFER_LEN_USER_INIT_MODE = 2048
 
 MAX_X_AXIS = 300000
 
@@ -105,7 +106,10 @@ def get_entropies(serialNumber):
 
     # Read in entropy from MED device
     fq[serialNumber] = queue.Queue()
-    ubuffer = (c_ubyte * ENTROPY_BUFFER_LEN).from_buffer(bytearray(ENTROPY_BUFFER_LEN))
+    ubuffer_cont_mode = (c_ubyte * ENTROPY_BUFFER_LEN_CONT_MODE).from_buffer(bytearray(ENTROPY_BUFFER_LEN_CONT_MODE))
+    ubuffer_user_init_mode = (c_ubyte * ENTROPY_BUFFER_LEN_USER_INIT_MODE).from_buffer(bytearray(ENTROPY_BUFFER_LEN_USER_INIT_MODE))
+    ubuffer = ubuffer_cont_mode
+    buffer_length = ENTROPY_BUFFER_LEN_CONT_MODE
     counter = 0
     walker = []
     mode = 1 # starts of in continuous mode
@@ -124,12 +128,16 @@ def get_entropies(serialNumber):
             # ... continue below and do 1 grab (entropy reading/processing)
         elif (mode != 3 and control_message == 4): # toggle into user-initiated mode
             mode = thread_messages[serialNumber] = 3
+            ubuffer = ubuffer_user_init_mode
+            buffer_length = ENTROPY_BUFFER_LEN_USER_INIT_MODE
             clear_stuff(serialNumber, walker)
             counter = 0
             print(serialNumber + " toggled to user-initiated mode")
             continue # press once more for a grab
         elif (control_message == 2): # continuous mode reset
             mode = thread_messages[serialNumber] = 1 # continuous mode toggle
+            ubuffer = ubuffer_cont_mode
+            buffer_length = ENTROPY_BUFFER_LEN_CONT_MODE
             clear_stuff(serialNumber, walker)
             counter = 0
             print(serialNumber + " continuous mode toggled/resetted")
@@ -139,8 +147,8 @@ def get_entropies(serialNumber):
             walker.clear()
 
         tic = time.perf_counter()
-        METER_FEEDER_LIB.MF_GetBytes(ENTROPY_BUFFER_LEN, ubuffer, serialNumber.encode("utf-8"), med_error_reason)
-        for i in range(ENTROPY_BUFFER_LEN):
+        METER_FEEDER_LIB.MF_GetBytes(buffer_length, ubuffer, serialNumber.encode("utf-8"), med_error_reason)
+        for i in range(buffer_length):
             # print(ubuffer[i])
             bits = bin_array(ubuffer[i])
             for i in range(8):
