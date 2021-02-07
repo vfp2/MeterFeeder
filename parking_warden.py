@@ -175,6 +175,11 @@ def handle_close(event):
     # stop the entropy-collecting thread
     sys.exit()
 
+def handle_key_press(event):
+    print('press', event.key)
+    if event.key == ' ':
+        user_init_mode_grab_callback(event)
+
 def cont_mode_reset_callback(event):
     # Message each device's message thread to reset/toggle its continuous mode
     for key in devices.keys():
@@ -228,6 +233,7 @@ if __name__ == "__main__":
     # Setup graph and call to frame update function
     fig = plt.figure()
     fig.canvas.mpl_connect('close_event', handle_close) # For when pressing X to close window
+    fig.canvas.mpl_connect('key_press_event', handle_key_press) # For when pressing space in user-initiated mode
     ax = fig.add_subplot(111, xlim=(0, MAX_X_AXIS), ylim=(-2000, 2000))
 
     # Button to reset graph in continuous mode or to toggle back into continuous mode from user-initiated mode
