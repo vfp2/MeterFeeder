@@ -176,7 +176,6 @@ def handle_close(event):
     sys.exit()
 
 def handle_key_press(event):
-    print('press', event.key)
     if event.key == ' ':
         user_init_mode_grab_callback(event)
 
