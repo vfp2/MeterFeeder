@@ -32,11 +32,18 @@ fq = {}
 # List of connected devices with serial numbers (key) and descriptions (value)
 devices = {}
 
+# A crude multi-threaded messaging system for toggling continuous/user-initiated mode and triggering resets/grabs
+# key: device serial number
+# values: (commands):
+# 1 - continuous mode toggle
+# 2 - continuous mode reset
+# 3 - user-initiated mode toggle
+# 4 - user-initiated mode grab
+thread_messages = {} 
+
 # Maximum and minimum graphed walk bounds per device
 maxs = {}
 mins = {}
-
-cont_mode_reset = False
 
 def load_library():
     # Load the MeterFeeter library
@@ -73,6 +80,7 @@ def get_devices():
     for i in range(numGenerators):
         kvs = generatorsList[i].split("|")
         devices[kvs[0]] = kvs[1]
+        thread_messages[kvs[0]] = 1 # continuous mode
         mins[kvs[0]] = 0
         maxs[kvs[0]] = 0
         print("\t" + str(kvs[0]) + "->" + kvs[1])
@@ -97,12 +105,14 @@ def get_entropies(serialNumber):
 
     while True: # continually read in entropy
         # Reset graph conditions
+        control_message = thread_messages[serialNumber]
         if (len(walker) > MAX_X_AXIS):
             walker.clear()
-        if (cont_mode_reset == True): # TODO: this wont work with multi devices as first thread to set to false will cause other devices not to reset
-            cont_mode_reset = False
+        if (control_message == 2): # continuous mode reset
+            thread_messages[serialNumber] = 1 # continuous mode toggle
             walker.clear()
             counter = 0
+            print(serialNumber + " continuous mode resetted")
 
         tic = time.perf_counter()
         METER_FEEDER_LIB.MF_GetBytes(ENTROPY_BUFFER_LEN, ubuffer, serialNumber.encode("utf-8"), errorReason)
@@ -134,11 +144,14 @@ def handle_close(event):
     sys.exit()
 
 def cont_mode_reset_callback(event):
-    global cont_mode_reset
-    cont_mode_reset = True
+    # Message each device's message thread to reset/toggle its continuous mode
+    for key in devices.keys():
+        thread_messages[key] = 2
 
 def user_init_mode_grab_callback(event):
-    print("TODO: implement user-initiated mode")
+    # Message each device's message thread to grab/toggle its user-initiated mode
+    for key in devices.keys():
+        thread_messages[key] = 4
 
 def update(frame):
     global stime_now
@@ -175,7 +188,7 @@ if __name__ == "__main__":
     get_devices()
 
     # Spawn individual threads for each connected devices to read in the entropy
-    for key, value in devices.items():
+    for key in devices.keys():
         w = threading.Thread(name=key, target=get_entropies, args=(key,))
         w.daemon = True
         w.start()
