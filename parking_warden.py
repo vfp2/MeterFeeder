@@ -85,6 +85,13 @@ def get_devices():
         maxs[kvs[0]] = 0
         print("\t" + str(kvs[0]) + "->" + kvs[1])
 
+def clear_stuff(serialNumber, walker):
+    # Clear queues and stuff
+    fq[serialNumber].empty()
+    walker.clear()
+    mins[serialNumber] = 0
+    maxs[serialNumber] = 0
+
 def bin_array(num): # source: https://stackoverflow.com/a/47521145/1103264
     """Convert a positive integer num into an 8-bit bit vector"""
     return np.array(list(np.binary_repr(num).zfill(8))).astype(np.int8)
@@ -117,19 +124,13 @@ def get_entropies(serialNumber):
             # ... continue below and do 1 grab (entropy reading/processing)
         elif (mode != 3 and control_message == 4): # toggle into user-initiated mode
             mode = thread_messages[serialNumber] = 3
-            fq[serialNumber].empty()
-            mins[serialNumber] = 0
-            maxs[serialNumber] = 0
-            walker.clear()
+            clear_stuff(serialNumber, walker)
             counter = 0
             print(serialNumber + " toggled to user-initiated mode")
             continue # press once more for a grab
         elif (control_message == 2): # continuous mode reset
             mode = thread_messages[serialNumber] = 1 # continuous mode toggle
-            fq[serialNumber].empty()
-            mins[serialNumber] = 0
-            maxs[serialNumber] = 0
-            walker.clear()
+            clear_stuff(serialNumber, walker)
             counter = 0
             print(serialNumber + " continuous mode toggled/resetted")
 
