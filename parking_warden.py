@@ -59,11 +59,11 @@ def load_library():
     METER_FEEDER_LIB.MF_GetBytes.argtypes = c_int, POINTER(c_ubyte), c_char_p, c_char_p,
 
     # Make driver initialize all the connected devices
-    global errorReason
-    errorReason = create_string_buffer(256)
-    result = METER_FEEDER_LIB.MF_Initialize(errorReason)
-    print("MeterFeeder::MF_Initialize: result: " + str(result) + ", errorReason: ", errorReason.value)
-    if (len(errorReason.value) > 0):
+    global med_error_reason
+    med_error_reason = create_string_buffer(256)
+    result = METER_FEEDER_LIB.MF_Initialize(med_error_reason)
+    print("MeterFeeder::MF_Initialize: result: " + str(result) + ", error (if any): ", med_error_reason.value)
+    if (len(med_error_reason.value) > 0):
         exit(result)
 
 def get_devices():
@@ -115,7 +115,7 @@ def get_entropies(serialNumber):
             print(serialNumber + " continuous mode resetted")
 
         tic = time.perf_counter()
-        METER_FEEDER_LIB.MF_GetBytes(ENTROPY_BUFFER_LEN, ubuffer, serialNumber.encode("utf-8"), errorReason)
+        METER_FEEDER_LIB.MF_GetBytes(ENTROPY_BUFFER_LEN, ubuffer, serialNumber.encode("utf-8"), med_error_reason)
         for i in range(ENTROPY_BUFFER_LEN):
             # print(ubuffer[i])
             bits = bin_array(ubuffer[i])
