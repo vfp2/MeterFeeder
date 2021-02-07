@@ -97,7 +97,7 @@ def bin_array(num): # source: https://stackoverflow.com/a/47521145/1103264
     """Convert a positive integer num into an 8-bit bit vector"""
     return np.array(list(np.binary_repr(num).zfill(8))).astype(np.int8)
 
-def get_entropies(serialNumber):
+def run_trials(serialNumber):
     global METER_FEEDER_LIB
 
     print(threading.currentThread().getName(), "entropy gathering thread starting")
@@ -224,7 +224,7 @@ if __name__ == "__main__":
 
     # Spawn individual threads for each connected devices to read in the entropy
     for key in devices.keys():
-        w = threading.Thread(name=key, target=get_entropies, args=(key,))
+        w = threading.Thread(name=key, target=run_trials, args=(key,))
         w.daemon = True
         w.start()
 
