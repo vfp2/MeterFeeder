@@ -91,7 +91,6 @@ def bin_array(num): # source: https://stackoverflow.com/a/47521145/1103264
 
 def get_entropies(serialNumber):
     global METER_FEEDER_LIB
-    global cont_mode_reset
 
     print(threading.currentThread().getName(), "entropy gathering thread starting")
 
@@ -102,17 +101,36 @@ def get_entropies(serialNumber):
     ubuffer = (c_ubyte * ENTROPY_BUFFER_LEN).from_buffer(bytearray(ENTROPY_BUFFER_LEN))
     counter = 0
     walker = []
+    mode = 1 # starts of in continuous mode
 
     while True: # continually read in entropy
-        # Reset graph conditions
+        # Continuous/user-initiated mode toggling/resetting/grabbing logic
         control_message = thread_messages[serialNumber]
-        if (len(walker) > MAX_X_AXIS):
-            walker.clear()
-        if (control_message == 2): # continuous mode reset
-            thread_messages[serialNumber] = 1 # continuous mode toggle
+        if (mode == 3 and control_message == 3): # in user-initiated mode but no grab command so don't do any entropy reading/processing
+            time.sleep(.001)
+            fq[serialNumber].put_nowait(walker) # so graph frame updater doesn't get it's IO blocked waiting for something to go into the queue, even if it's nothing
+            continue
+            # continue # loop again
+        elif (mode == 3 and control_message == 4): # in user-initiated mode with grab command
+            thread_messages[serialNumber] = 3
+            print(serialNumber + " doing grab")
+            # ... continue below and do 1 grab (entropy reading/processing)
+        elif (mode != 3 and control_message == 4): # toggle into user-initiated mode
+            mode = thread_messages[serialNumber] = 3
+            fq[serialNumber].empty()
             walker.clear()
             counter = 0
-            print(serialNumber + " continuous mode resetted")
+            print(serialNumber + " toggled to user-initiated mode")
+            continue # press once more for a grab
+        elif (control_message == 2): # continuous mode reset
+            mode = thread_messages[serialNumber] = 1 # continuous mode toggle
+            walker.clear()
+            counter = 0
+            print(serialNumber + " continuous mode toggled/resetted")
+
+        # Reset graph when reach the right-side of graph
+        if (len(walker) > MAX_X_AXIS):
+            walker.clear()
 
         tic = time.perf_counter()
         METER_FEEDER_LIB.MF_GetBytes(ENTROPY_BUFFER_LEN, ubuffer, serialNumber.encode("utf-8"), med_error_reason)
@@ -131,8 +149,8 @@ def get_entropies(serialNumber):
                     if (counter < mins[serialNumber]):
                         mins[serialNumber] = counter
 
-        fq[serialNumber].put(walker)
         print(f"{(time.perf_counter() - tic)*1000:0.0f}ms")
+        fq[serialNumber].put_nowait(walker)
 
 def handle_close(event):
     # Shutdown the driver
@@ -171,7 +189,7 @@ def update(frame):
     ci = 0 # color index
     for key, value in devices.items():
         # Plot from the queue
-        ys = fq[key].get()
+        ys = fq[key].get_nowait()
         if (len(ys)) == 0:
             continue
         lastY = ys[-1]
@@ -208,5 +226,5 @@ if __name__ == "__main__":
     user_init_mode_btn = Button(user_init_mode_btn_ax, 'User-initiated Mode/Grab')
     user_init_mode_btn.on_clicked(user_init_mode_grab_callback)
     
-    ani = FuncAnimation(fig, update, interval=10)
+    ani = FuncAnimation(fig, update, interval=1)
     plt.show()
