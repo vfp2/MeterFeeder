@@ -133,7 +133,6 @@ def get_entropies(serialNumber):
             clear_stuff(serialNumber, walker)
             counter = 0
             print(serialNumber + " toggled to user-initiated mode")
-            continue # press once more for a grab
         elif (control_message == 2): # continuous mode reset
             mode = thread_messages[serialNumber] = 1 # continuous mode toggle
             ubuffer = ubuffer_cont_mode
