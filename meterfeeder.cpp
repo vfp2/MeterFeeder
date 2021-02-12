@@ -18,21 +18,41 @@ int main(int argc, char *argv[]) {
 
 	// If invoked with command line arguments to specify the device serial number
 	// and length of entropy (in bytes) to read only read from that device
-	// args: <serial number> [length to read in bytes]
+	// args: <serial number> [length to read in bytes] [1 to run in infinite loop]
 	if (argc >= 2) {
 		Generator *generator = driver->FindGeneratorBySerial(argv[1]);
+		
 		int len = 1;
-		if (argc == 3) len = atoi(argv[2]);
+		if (argc >= 3) len = atoi(argv[2]);
+
 		UCHAR* bytes = (UCHAR*)malloc(len * sizeof(UCHAR));
-		driver->GetBytes(generator->GetHandle(), len, bytes, &errorReason);
-		if (errorReason.length() != 0) {
-			cout << errorReason << endl;
-		} else {
-			for (int i = 0; i < len; i++) {
-				cout << hex << (unsigned int) bytes[i];
+		
+		bool cont = true;
+		if (argc == 4 && atoi(argv[3]) == 1)
+			cont = true;
+		else
+			cont = false;
+
+		
+		do {
+			using namespace std::chrono;
+			auto start = high_resolution_clock::now();
+
+			driver->GetBytes(generator->GetHandle(), len, bytes, &errorReason);
+
+			if (errorReason.length() != 0) {
+				cout << errorReason << endl;
+			} else {
+				for (int i = 0; i < len; i++) {
+					cout << hex << (unsigned int) bytes[i];
+				}
 			}
-		}
+
+			cout << endl << "\t====> " << std::dec << duration_cast<milliseconds>(high_resolution_clock::now() - start).count() << " ms" << endl << endl; 
+		} while (cont);
+			
 		delete bytes;
+
 		return 0;
 	}
 
