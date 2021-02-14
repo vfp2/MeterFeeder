@@ -7,6 +7,8 @@
 
 #include "driver.h"
 
+#include  <iomanip>
+
 int main(int argc, char *argv[]) {
 	using namespace MeterFeeder;
 	Driver* driver = new Driver();
@@ -44,11 +46,12 @@ int main(int argc, char *argv[]) {
 				cout << errorReason << endl;
 			} else {
 				for (int i = 0; i < len; i++) {
-					cout << hex << (unsigned int) bytes[i];
+					cout << setfill('0') << setw(2) << right << hex << (unsigned int)bytes[i];
 				}
 			}
 
-			cout << endl << "\t====> " << std::dec << duration_cast<milliseconds>(high_resolution_clock::now() - start).count() << " ms" << endl << endl; 
+			if (cont)
+				cout << endl << "\t====> " << std::dec << duration_cast<milliseconds>(high_resolution_clock::now() - start).count() << " ms" << endl << endl; 
 		} while (cont);
 			
 		delete bytes;
