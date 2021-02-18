@@ -25,6 +25,8 @@ bool MeterFeeder::Driver::Initialize(string* errorReason) {
 		return false;
 	}
 
+	_generators.clear();
+
 	// Open devices by serialNumber
 	for (DWORD i = 0; i < numDevices; i++) {
 		string serialNumber = devInfoList[i].SerialNumber;
