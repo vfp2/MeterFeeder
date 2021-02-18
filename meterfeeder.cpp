@@ -35,7 +35,6 @@ int main(int argc, char *argv[]) {
 		else
 			cont = false;
 
-		
 		do {
 			using namespace std::chrono;
 			auto start = high_resolution_clock::now();
