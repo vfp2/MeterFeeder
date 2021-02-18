@@ -31,13 +31,13 @@ int MeterFeeder::Generator::Stream() {
 	// Purge before writing
 	FT_STATUS ftdiStatus = FT_Purge(ftHandle_, FT_PURGE_RX | FT_PURGE_TX);
     if (ftdiStatus != FT_OK) {
-		return MF_DEVICE_ERROR;
+		return ftdiStatus;
 	}
 
     // WRITE TO DEVICE
 	ftdiStatus = FT_Write(ftHandle_, &initCommand, 1, &bytesTxd);
 	if (ftdiStatus != FT_OK || bytesTxd != 1) {
-		return MF_DEVICE_ERROR;
+		return ftdiStatus;
 	}
 
     return MF_OK;
@@ -48,9 +48,12 @@ int MeterFeeder::Generator::Read(DWORD length, UCHAR* dxData) {
 
     // READ FROM DEVICE
 	FT_STATUS ftdiStatus = FT_Read(ftHandle_, dxData, length, &bytesRxd);
-	if (ftdiStatus != FT_OK || bytesRxd != length) {
-		return MF_DEVICE_ERROR;
-	}
+    if (bytesRxd != length) {
+        return MF_RXD_BYTES_LENGTH_WRONG;
+    }
+    if (ftdiStatus != FT_OK) {
+		return ftdiStatus;
+    }
 
     return MF_OK;
 }

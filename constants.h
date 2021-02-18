@@ -25,8 +25,8 @@ enum {
 	FTDI_DEVICE_TX_TIMEOUT_MS = 5000
 };
 
-// Meter Feed constants
+// Meter Feed status // MF_STATUS
 enum {
-	MF_DEVICE_ERROR	= -1,
 	MF_OK,
+	MF_RXD_BYTES_LENGTH_WRONG = 1000,
 };

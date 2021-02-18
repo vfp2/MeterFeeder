@@ -51,7 +51,7 @@ namespace MeterFeeder {
             /**
              * Send command to start streaming.
              * 
-             * @return MF_DEVICE_ERROR on error communicating with the generator.
+             * @return FT_STATUS or MT_STATUS on error communicating with the generator.
              */
             int Stream();
 
@@ -61,7 +61,7 @@ namespace MeterFeeder {
              * @param Length in bytes to read.
              * @param Pointer to where to store the streamed data (the random number).
              * 
-             * @return MF_DEVICE_ERROR on error communicating with the generator.
+             * @return FT_STATUS or MT_STATUS on error communicating with the generator.
              */
             int Read(DWORD length, UCHAR* dxData);
 

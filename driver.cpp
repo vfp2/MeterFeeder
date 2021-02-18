@@ -9,8 +9,12 @@
 bool MeterFeeder::Driver::Initialize(string* errorReason) {
 	DWORD numDevices;
 	FT_STATUS ftdiStatus = FT_CreateDeviceInfoList(&numDevices);
-	if (ftdiStatus != FT_OK || numDevices < 1) {
-		makeErrorStr(errorReason, "Error creating device info list. Check if generators are connected.");
+	if (ftdiStatus != FT_OK) {
+		makeErrorStr(errorReason, "Error creating device info list. Check if generators are connected. [%d]", ftdiStatus);
+		return false;
+	}
+	if (numDevices < 1) {
+		makeErrorStr(errorReason, "No generators connected", ftdiStatus);
 		return false;
 	}
 
@@ -88,14 +92,16 @@ void MeterFeeder::Driver::GetBytes(FT_HANDLE handle, int length, unsigned char* 
 	}
 
 	// Get the device to start measuring randomness
-	if (MF_DEVICE_ERROR == generator->Stream()) {
-		makeErrorStr(errorReason, "Error instructing %s to start streaming entropy", generator->GetSerialNumber().c_str());
+	FT_STATUS streamStatus = generator->Stream();
+	if (streamStatus != FT_OK) {
+		makeErrorStr(errorReason, "Error instructing %s to start streaming entropy [%d]", generator->GetSerialNumber().c_str(), streamStatus);
 		return;
 	}
 
 	// Read in the entropy
-	if (MF_DEVICE_ERROR == generator->Read(length, entropyBytes)) {
-		makeErrorStr(errorReason, "Error reading in entropy from %s", generator->GetSerialNumber().c_str());
+	FT_STATUS readStatus = generator->Read(length, entropyBytes);
+	if (readStatus != FT_OK) {
+		makeErrorStr(errorReason, "Error reading in entropy from %s [%d]", generator->GetSerialNumber().c_str(), readStatus);
 		return;
 	}
 };
