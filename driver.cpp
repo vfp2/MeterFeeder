@@ -141,7 +141,7 @@ void MeterFeeder::Driver::makeErrorStr(string* errorReason, const char* format, 
  * Code below for interfacing with MeterFeeder as a library
  */
 
-#ifdef __APPLE__
+#ifdef __APPLE__ || __GNUC__
 	#define DllExport __attribute__((visibility("default")))
 #else
  	#define DllExport __declspec(dllexport)
