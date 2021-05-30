@@ -48,7 +48,7 @@ public class Driver {
             String serialNumber = devInfoList[i].serialNumber;
             int ftHandle = devInfoList[i].handle;
 
-            if (serialNumber.contains("QWR4")) {
+            if (!serialNumber.contains("QWR4")) {
                 // Skip any other but MED1K or MED100K devices
                 continue;
             }
