@@ -1,7 +1,8 @@
 .DS_Store
-meterfeeder
+/meterfeeder
 meterfeeder.exe
 meterfeeder.dSYM/*
 libmeterfeeder.dylib*
 meterfeeder.dll
 dist
+objs
