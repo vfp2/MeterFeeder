@@ -126,7 +126,7 @@ public class Driver {
 
     public Generator FindGeneratorBySerial(String serialNumber) {
         for (int i = 0; i < _generators.size(); i++) {
-            if (_generators.get(i).GetSerialNumber() == serialNumber) {
+            if (_generators.get(i).GetSerialNumber().equals(serialNumber)) {
                 return _generators.get(i);
             }
         }
