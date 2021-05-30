@@ -40,7 +40,7 @@ devices = {}
 # 2 - continuous mode reset
 # 3 - user-initiated mode toggle
 # 4 - user-initiated mode grab
-# 5 - uset-initiated mode reset
+# 5 - user-initiated mode reset
 thread_messages = {} 
 
 # Maximum and minimum graphed walk bounds per device

@@ -95,7 +95,6 @@ namespace MeterFeeder {
          */
         void GetBytes(FT_HANDLE handle, int length, unsigned char *entropyBytes, string* errorReason);
 
-
         private:
             vector<Generator> _generators;
             void makeErrorStr(string* errorReason, const char* format, ...);
