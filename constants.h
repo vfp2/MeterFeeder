@@ -16,9 +16,10 @@ enum {
 	// https://www.ftdichip.com/Support/Knowledgebase/index.html?ft_setlatencytimer.htm
 	FTDI_DEVICE_LATENCY_MS = 2,
 
-	// USB packet size for both in and out tranfers
+	// USB packet size for both in and out transfers
 	// https://www.ftdichip.com/Support/Knowledgebase/index.html?ft_setusbparameters.htm
-	FTDI_DEVICE_PACKET_USB_SIZE = 8,
+	// * Must be a mutiple of 64
+	FTDI_DEVICE_PACKET_USB_SIZE_BYTES = 64,
 
 	// Read/write timeout (milliseconds)
 	// https://www.ftdichip.com/Support/Knowledgebase/index.html?ft_settimeouts.htm

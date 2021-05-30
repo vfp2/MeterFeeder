@@ -46,17 +46,17 @@ bool MeterFeeder::Driver::Initialize(string* errorReason) {
 		}
 
 		// Configure FTDI transport parameters
-		FT_SetLatencyTimer(ftHandle, FTDI_DEVICE_LATENCY_MS);
+		ftdiStatus = FT_SetLatencyTimer(ftHandle, FTDI_DEVICE_LATENCY_MS);
 		if (ftdiStatus != FT_OK) {
 			makeErrorStr(errorReason, "Failed to set latency time for %s", &serialNumber);
 			return false;
 		}
-		FT_SetUSBParameters(ftHandle, FTDI_DEVICE_PACKET_USB_SIZE, FTDI_DEVICE_PACKET_USB_SIZE);
+		ftdiStatus = FT_SetUSBParameters(ftHandle, FTDI_DEVICE_PACKET_USB_SIZE_BYTES, FTDI_DEVICE_PACKET_USB_SIZE_BYTES);
 		if (ftdiStatus != FT_OK) {
 			makeErrorStr(errorReason, "Failed to set in/out packset size for %s", &serialNumber);
 			return false;
 		}
-		FT_SetTimeouts(ftHandle, FTDI_DEVICE_TX_TIMEOUT_MS, FTDI_DEVICE_TX_TIMEOUT_MS);
+		ftdiStatus = FT_SetTimeouts(ftHandle, FTDI_DEVICE_TX_TIMEOUT_MS, FTDI_DEVICE_TX_TIMEOUT_MS);
 		if (ftdiStatus != FT_OK) {
 			makeErrorStr(errorReason, "Failed to set timeout time for %s", &serialNumber);
 			return false;
