@@ -75,7 +75,7 @@ def get_devices():
 
     # Get the list of connected devices
     generatorsListBuffers = [create_string_buffer(58) for i in range(numGenerators)]
-    generatorsListBufferPointers = (c_char_p*4)(*map(addressof, generatorsListBuffers))
+    generatorsListBufferPointers = (c_char_p*numGenerators)(*map(addressof, generatorsListBuffers))
     METER_FEEDER_LIB.MF_GetListGenerators(generatorsListBufferPointers)
     generatorsList = [str(s.value, 'utf-8') for s in generatorsListBuffers]
     print("MeterFeeder::MF_GetListGenerators: Device serial numbers and descriptions:")
