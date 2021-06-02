@@ -40,7 +40,7 @@ QWR4M004 (QNG Model PQ4000KU): 153
 #### On a PC
 
 ```bash
-C:\>build-win-executable.sh 
+C:\>build-win-executable.bat
 C:\>meterfeeder.exe
 QWR4A003 (MED100K 100 kHz v1.0): 92
 QWR4M004 (QNG Model PQ4000KU): 153
