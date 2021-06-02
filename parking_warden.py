@@ -57,7 +57,7 @@ def load_library():
         METER_FEEDER_LIB = cdll.LoadLibrary(os.getcwd() + '/libmeterfeeder.dylib')
     elif platform == "win32":
         # Windows
-        METER_FEEDER_LIB = cdll.LoadLibrary(os.getcwd() + 'meterfeeder.dll')
+        METER_FEEDER_LIB = cdll.LoadLibrary(os.getcwd() + '/meterfeeder.dll')
     METER_FEEDER_LIB.MF_Initialize.argtypes = c_char_p,
     METER_FEEDER_LIB.MF_Initialize.restype = c_int
     METER_FEEDER_LIB.MF_GetNumberGenerators.restype = c_int
