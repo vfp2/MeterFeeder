@@ -7,7 +7,7 @@
 import os
 import sys
 import time
-import platform
+from sys import platform
 from ctypes import *
 import numpy as np
 import matplotlib.backends.backend_tkagg
@@ -50,10 +50,15 @@ mins = {}
 def load_library():
     # Load the MeterFeeter library
     global METER_FEEDER_LIB
-    if os.name == 'nt': # windows
-        METER_FEEDER_LIB = cdll.LoadLibrary('meterfeeder.dll')
-    else: # mac. TODO: add linux one day
+    if platform == "linux" or platform == "linux2":
+        # Linux
+        METER_FEEDER_LIB = cdll.LoadLibrary(os.getcwd() + '/libmeterfeeder.so')
+    elif platform == "darwin":
+        # OS X
         METER_FEEDER_LIB = cdll.LoadLibrary(os.getcwd() + '/libmeterfeeder.dylib')
+    elif platform == "win32":
+        # Windows
+        METER_FEEDER_LIB = cdll.LoadLibrary(os.getcwd() + 'meterfeeder.dll')
     METER_FEEDER_LIB.MF_Initialize.argtypes = c_char_p,
     METER_FEEDER_LIB.MF_Initialize.restype = c_int
     METER_FEEDER_LIB.MF_GetNumberGenerators.restype = c_int
