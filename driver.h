@@ -11,6 +11,7 @@
 #include <stdarg.h>
 #include <string>
 #include <vector>
+#include <math.h>
 
 #include "ftd2xx/ftd2xx.h"
 

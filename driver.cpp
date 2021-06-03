@@ -174,7 +174,7 @@ extern "C" {
 	Driver driver = Driver();
 
 	// Initialize the connected generators
-	DllExport int MF_Initialize(char *pErrorReason) {
+	DllExport int MF_Initialize(char* pErrorReason) {
 		string errorReason = "";
 		int res = driver.Initialize(&errorReason);
 		std::strcpy(pErrorReason, errorReason.c_str());
@@ -184,6 +184,24 @@ extern "C" {
 	// Shutdown and de-initialize all the generators.
     DllExport void MF_Shutdown() {
 		driver.Shutdown();
+	}
+
+	// Shutdown and re-initialize all the generators.
+    DllExport int MF_Reset(char* pErrorReason) {
+		MF_Shutdown();
+		return MF_Initialize(pErrorReason);
+	}
+
+	// Stop streaming on the specified generator.
+    DllExport bool MF_Clear(char* generatorSerialNumber, char* pErrorReason) {
+		string errorReason = "";
+		Generator *generator = driver.FindGeneratorBySerial(generatorSerialNumber);
+		driver.Clear(generator->GetHandle(), &errorReason);
+		std::strcpy(pErrorReason, errorReason.c_str());
+		if (*pErrorReason != '\0') {
+			return false;
+		}
+		return true;
 	}
 
     // Get the number of connected and successfully initialized generators.
@@ -215,5 +233,65 @@ extern "C" {
 		unsigned char byte;
 		MF_GetBytes(1, &byte, generatorSerialNumber, pErrorReason);
 		return byte;
+	}
+
+	// Get a random 32 bit integer.
+	DllExport int32_t MF_RandInt32(char* generatorSerialNumber, char* pErrorReason) {
+		UCHAR *buffer = (UCHAR*)malloc(sizeof(int32_t));
+		MF_GetBytes(sizeof(int32_t), buffer, generatorSerialNumber, pErrorReason);
+
+		int32_t rc = 0;
+
+		// (little endianess assumed)
+		for (int i = 0; i < sizeof(int32_t); i++) {
+			((unsigned char*)&rc)[i] = buffer[i];
+		}
+
+		return rc;
+	}
+
+	// Get a random floating point number between [0,1)
+	DllExport double MF_RandUniform(char* generatorSerialNumber, char* pErrorReason) {
+		int sizeofUint48 = 6; // value for the mantissa part of double
+		UCHAR *buffer = (UCHAR*)malloc(sizeof(sizeofUint48));
+		MF_GetBytes(sizeofUint48, buffer, generatorSerialNumber, pErrorReason);
+
+		uint64_t mantissa = 0;
+		// (little endianess assumed)
+		for (int i = 0; i < sizeofUint48; i++) {
+			((unsigned char*)&mantissa)[i] = buffer[i];
+		}
+
+		// copy 6 bytes into mantissa
+		double uniform = (double)mantissa;
+		uniform /= 281474976710656.0;  // 2^(6*8)
+
+		return uniform;
+	}
+
+	// Get a random normal number with mean zero and standard deviation one
+	DllExport double MF_RandNormal(char* generatorSerialNumber, char* pErrorReason) {
+		// TODO: Not confident in the accuracy of the implementation here - should be checked one day
+
+		// first half of calculation: create normU1
+		double normU1 = MF_RandUniform(generatorSerialNumber, pErrorReason);
+		if (*pErrorReason != '\0') {
+			return 0;
+		}
+		normU1 += FTDI_DEVICE_HALF_OF_UNIFORM_LSB;
+
+		// second half: create normU2
+		double normU2 = MF_RandUniform(generatorSerialNumber, pErrorReason);
+		if (*pErrorReason != '\0') {
+			return 0;
+		}
+		normU2 += FTDI_DEVICE_HALF_OF_UNIFORM_LSB;
+
+		// n1 = cos(2PI * u2) * sqrt(-2 * ln(u1)) 
+		// n2 = sin(2PI * u2) * sqrt(-2 * ln(u1))
+		double sqrtTerm = sqrt(-2.0 * log(normU1));
+		double normal = cos(FTDI_DEVICE_2_PI * normU2) * sqrtTerm;
+		//normalConjugate = sin(FTDI_DEVICE_2_PI * normU2) * sqrtTerm;
+		return normal;
 	}
 }
