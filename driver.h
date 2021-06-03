@@ -41,6 +41,15 @@ namespace MeterFeeder {
          */
         void Shutdown();
 
+         /**
+         *  Stop streaming on the specified generator.
+         * 
+         * @param Handle of the generator.
+         * @param Serial number identifying the device.
+         * @param Error reason upon failure to retrieve data.
+         */
+        void Clear(FT_HANDLE handle, string* errorReason);
+
         /**
          * Get the number of connected and successfully initialized generators.
          * 
@@ -71,7 +80,6 @@ namespace MeterFeeder {
          * 
          * @return The Generator object if found, else null.
          */
-        
         Generator* FindGeneratorBySerial(string serialNumber);
 
         /**

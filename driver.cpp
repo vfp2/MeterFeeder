@@ -77,6 +77,22 @@ void MeterFeeder::Driver::Shutdown() {
 	}
 };
 
+void MeterFeeder::Driver::Clear(FT_HANDLE handle, string* errorReason) {
+	// Find the specified generator
+	Generator *generator = FindGeneratorByHandle(handle);
+	if (!generator) {
+		makeErrorStr(errorReason, "Could not find %s by the handle %x", generator->GetSerialNumber().c_str(), generator->GetHandle());
+		return;
+	}
+
+	// Get the device to stop measuring randomness
+	FT_STATUS streamStatus = generator->StopStreaming();
+	if (streamStatus != FT_OK) {
+		makeErrorStr(errorReason, "Error instructing %s to stop streaming entropy [%d]", generator->GetSerialNumber().c_str(), streamStatus);
+		return;
+	}
+};
+
 int MeterFeeder::Driver::GetNumberGenerators() {
 	return _generators.size();	
 };
@@ -94,7 +110,7 @@ void MeterFeeder::Driver::GetBytes(FT_HANDLE handle, int length, unsigned char* 
 	}
 
 	// Get the device to start measuring randomness
-	FT_STATUS streamStatus = generator->Stream();
+	FT_STATUS streamStatus = generator->StartStreaming();
 	if (streamStatus != FT_OK) {
 		makeErrorStr(errorReason, "Error instructing %s to start streaming entropy [%d]", generator->GetSerialNumber().c_str(), streamStatus);
 		return;
