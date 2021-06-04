@@ -22,6 +22,8 @@ Visual Studio: Community 2019 (16.0.30804.86 D16.8)
 Compiler: cl /version
     Microsoft (R) C/C++ Optimizing Compiler Version 19.28.29335 for x64 
     Microsoft (R) Incremental Linker Version 14.28.29335.0
+
+Note: On another Windows 10 machine I found I could compile the meterfeeder.exe but it was returning "No generators connected" even though I had some plugged in. I resolved this by right-clicking and choosing "Install" for the ftdiport.inf and ftdibus.inf files that come with the FTD2XX drivers (see inside the ftd2xx folder).
 ```
 
 ### To build just MeterFeeder and a basic binary to read in random byte numers (unsigned char type):
@@ -40,10 +42,15 @@ QWR4M004 (QNG Model PQ4000KU): 153
 #### On a PC
 
 ```bash
-C:\>build-win-executable.sh 
+C:\>build-win-executable.bat
 C:\>meterfeeder.exe
 QWR4A003 (MED100K 100 kHz v1.0): 92
 QWR4M004 (QNG Model PQ4000KU): 153
+```
+
+##### If trying to build meterfeeder.dll:
+```
+Add C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build to the PATH environment variable, modifying it to match your Visual Studio Code installation.
 ```
 
 ### To run Parking Warden

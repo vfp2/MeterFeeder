@@ -7,10 +7,9 @@
 import os
 import sys
 import time
-import platform
+from sys import platform
 from ctypes import *
 import numpy as np
-import matplotlib.backends.backend_tkagg
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib.widgets import Button
@@ -50,10 +49,15 @@ mins = {}
 def load_library():
     # Load the MeterFeeter library
     global METER_FEEDER_LIB
-    if os.name == 'nt': # windows
-        METER_FEEDER_LIB = cdll.LoadLibrary('meterfeeder.dll')
-    else: # mac. TODO: add linux one day
+    if platform == "linux" or platform == "linux2":
+        # Linux
+        METER_FEEDER_LIB = cdll.LoadLibrary(os.getcwd() + '/libmeterfeeder.so')
+    elif platform == "darwin":
+        # OS X
         METER_FEEDER_LIB = cdll.LoadLibrary(os.getcwd() + '/libmeterfeeder.dylib')
+    elif platform == "win32":
+        # Windows
+        METER_FEEDER_LIB = cdll.LoadLibrary(os.getcwd() + '/meterfeeder.dll')
     METER_FEEDER_LIB.MF_Initialize.argtypes = c_char_p,
     METER_FEEDER_LIB.MF_Initialize.restype = c_int
     METER_FEEDER_LIB.MF_GetNumberGenerators.restype = c_int
@@ -75,7 +79,7 @@ def get_devices():
 
     # Get the list of connected devices
     generatorsListBuffers = [create_string_buffer(58) for i in range(numGenerators)]
-    generatorsListBufferPointers = (c_char_p*4)(*map(addressof, generatorsListBuffers))
+    generatorsListBufferPointers = (c_char_p*numGenerators)(*map(addressof, generatorsListBuffers))
     METER_FEEDER_LIB.MF_GetListGenerators(generatorsListBufferPointers)
     generatorsList = [str(s.value, 'utf-8') for s in generatorsListBuffers]
     print("MeterFeeder::MF_GetListGenerators: Device serial numbers and descriptions:")

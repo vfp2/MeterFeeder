@@ -53,7 +53,14 @@ namespace MeterFeeder {
              * 
              * @return FT_STATUS or MT_STATUS on error communicating with the generator.
              */
-            int Stream();
+            int StartStreaming();
+
+            /**
+             * Send command to stop streaming.
+             * 
+             * @return FT_STATUS or MT_STATUS on error communicating with the generator.
+             */
+            int StopStreaming();
 
             /**
              * Read in the streamed entropy.
