@@ -30,7 +30,7 @@ Note: On another Windows 10 machine I found I could compile the meterfeeder.exe 
 
 #### On a Mac
 
-Assuming you've got libusb 1.0.23 installed (with brew etc.) and have plugged in your USB MED devices:
+Assuming you've got libusb 1.0.26 installed (with brew etc.) and have plugged in your USB MED devices:
 
 ```bash
 $ ./build-mac-executable.sh 
