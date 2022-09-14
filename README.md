@@ -6,7 +6,7 @@
 
 ## TL;DR; I just want to run it!
 
-So far I've tried running it on Mac and Windows (Linux to come). Environment details:
+So far I've had success running it on Mac and Windows. Other parties have also been able to run it on Linux. Environment details:
 
 ```
 OS X: 10.15.7
