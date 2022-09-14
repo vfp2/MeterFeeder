@@ -18,6 +18,8 @@ They may be provided in a black or a translucent blue enclosure about the size o
 
 * PQ4000KM S/N QWR4Mxxx Internal 128 MHz, no bias amplification, a random generator with no deterministic postprocessing, output rate 4 MHz.
 
+* PQ128MU S/N QWR7xxxx Internal 128 MHz, no bias amplification, no postprocessing, output rate 128 Mhz.
+
 The distinguishing feature is the 5th digit of the serial number, which is a unique alpha character for each model type. The serial numbers can be read by a program since they are used to register the device to be read by the USB interface. The last 3 digits of the S/N are just sequential numbers from 1 to 999 to make each one unique. QWR4 is part of the S/N that is recognized by the interface program so it doesn’t connect to some other device that uses FTDI USB interface chips.
 
 To complete this list, there is a Model MED1Kx3. I believe the S/N is QWR4Cxxx. Internal rate 384 MHz, bias amplified 320x, output rate 999.0 Hz. This is intended to compare with other generators used in the Global Consciousness Project (GCP), which output 1 Kbps. So far only one person has this generator tasked with the comparison for future GCP installations.
