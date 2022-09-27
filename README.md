@@ -6,7 +6,7 @@
 
 ## TL;DR; I just want to run it!
 
-So far I've tried running it on Mac and Windows (Linux to come). Environment details:
+So far I've had success running it on Mac and Windows. Other parties have also been able to run it on Linux. Environment details:
 
 ```
 OS X: 10.15.7
@@ -30,7 +30,7 @@ Note: On another Windows 10 machine I found I could compile the meterfeeder.exe 
 
 #### On a Mac
 
-Assuming you've got libusb 1.0.23 installed (with brew etc.) and have plugged in your USB MED devices:
+Assuming you've got libusb 1.0.26 installed (with brew etc.) and have plugged in your USB MED devices:
 
 ```bash
 $ ./build-mac-executable.sh 
