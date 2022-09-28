@@ -33,6 +33,13 @@ bool MeterFeeder::Driver::Initialize(string* errorReason) {
 		serialNumber.resize(sizeof(devInfoList[i].SerialNumber));
 		FT_HANDLE ftHandle = devInfoList[i].ftHandle;
 
+		printf("Dev %d:\n",i);
+		printf(" Flags=0x%x\n",devInfoList[i].Flags);
+		printf(" Type=0x%x\n",devInfoList[i].Type);
+		printf(" SerialNumber=%s\n",devInfoList[i].SerialNumber);
+		printf(" Description=%s\n",devInfoList[i].Description);
+		printf(" ftHandle=0x%x\n",devInfoList[i].ftHandle); 
+
 		if (serialNumber.find("QWR") != 0) {
 			// Skip other but MED1K or MED100K and PQ128MU devices
 			continue;
