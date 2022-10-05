@@ -1,6 +1,9 @@
-# allow users of group 'plugdev' to claim the devices
-# add 'REG-$attr{serial}' symlinks to /dev
+# R2000KU, PQ4000KU, PQ4000KS, R32MU, PQ32MU, PQ128MU
+
 # unbind devices from ftdi_sio to avoid conflicts with FTD2XX
 
-# R2000KU, PQ4000KU, PQ4000KS, R32MU, PQ32MU, PQ128MU
-ACTION=="bind", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ENV{ID_VENDOR_ID}=="0403", ENV{ID_MODEL_ID}=="6001|6014", DRIVER=="usb", MODE="0664", GROUP="plugdev", SYMLINK+="REG-$attr{serial}", RUN+="/bin/sh -c 'ls /sys/bus/usb/drivers/ftdi_sio | grep %k > /sys/bus/usb/drivers/ftdi_sio/unbind'"
+ACTION=="add|bind", SUBSYSTEM=="usb", ENV{PRODUCT}=="403/6001/*|403/6014/*", DRIVER=="ftdi_sio", RUN+="/bin/sh /etc/udev/scripts/ftdi_unbind.sh %k &'"
+
+# allow users of group 'plugdev' to claim the devices and add 'REG-$attr{serial}' symlinks to /dev
+
+ACTION=="add|bind", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ENV{ID_VENDOR_ID}=="0403", ENV{ID_MODEL_ID}=="6001|6014", DRIVER=="usb", MODE="0664", GROUP="plugdev", SYMLINK+="REG-$attr{serial}"

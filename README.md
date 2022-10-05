@@ -58,14 +58,6 @@ $ ./linux-setup-udev.sh
 
 To remove the udev rule and helper script simply run `./linux-remove-udev.sh`.
 
-The rules will apply when devices are plugged while the system is running. If they are already plugged at boot time it is necessary to manually run them using the following command:
-
-```bash
-$ sudo udevadm trigger
-```
-
-NOTE: This inconvenience will be fixed in a future update.
-
 ## To build just MeterFeeder and a basic binary to read in random byte numers (unsigned char type):
 
 ### On a Mac
@@ -125,4 +117,4 @@ Copy meterfeeder.dll and ftd2xx.dll to dist\ and then run dist\parking_warden.ex
 
 
 
-![ScreenShot](https://raw.github.com/vfp2/MeterFeeder/master/pw_screenshot.png)
+![ScreenShot](parking_warden/pw_screenshot.png)
