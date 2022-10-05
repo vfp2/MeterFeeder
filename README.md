@@ -43,7 +43,14 @@ On some Windows 10 machines meterfeeder returns "no generators" even when you ha
 
 ### Linux
 
-On Linux meterfeeder returns "no generators" even when you have them plugged in. The reason for this is that the kernel automatically binds the devices to a VCP driver called `ftdi_sio`. It can be resolved by running the following script that creates a udev rule and a helper script to automatically unbind MEDs from `ftdi_sio` and makes them visible to the FTD2XX driver underlying meterfeeder.
+On Linux meterfeeder returns "no generators" even when you have them plugged in. The reason for this is that the kernel automatically binds the devices to a VCP driver called `ftdi_sio`. It can be resolved by either following official FT recommendations of disabling the VCP kernel module using this command:
+
+```bash
+$ sudo rmmod ftdi_sio
+$ sudo rmmod usbserial
+```
+
+This brute solution might get you into trouble with other devices needing thje kernel's automatic VCP functionality. A more elegant solution is running the provided script that creates a udev rule and a helper script to automatically unbind MEDs from `ftdi_sio` and makes them visible to the FTD2XX driver underlying meterfeeder.
 
 ```bash
 $ ./linux-setup-udev.sh
