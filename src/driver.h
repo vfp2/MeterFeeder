@@ -13,7 +13,7 @@
 #include <vector>
 #include <math.h>
 
-#include "ftd2xx/ftd2xx.h"
+#include "../ftd2xx/ftd2xx.h"
 
 #include "constants.h"
 #include "generator.h"

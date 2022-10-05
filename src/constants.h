@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "ftd2xx/ftd2xx.h"
+#include "../ftd2xx/ftd2xx.h"
 
 #define MF_ERROR_STR_MAX_LEN 256
 

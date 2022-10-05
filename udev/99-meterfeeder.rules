@@ -1,0 +1,7 @@
+# allow users of group 'plugdev' to claim the devices
+# add 'REG-$attr{serial}' symlinks to /dev
+# unbind devices from ftdi_sio to avoid conflicts with FTD2XX
+
+# R2000KU, PQ4000KU, PQ4000KS, R32MU, PQ32MU, PQ128MU
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001|6014", MODE="0664", GROUP="plugdev", SYMLINK+="REG-$attr{serial}", RUN+="/etc/udev/scripts/unbind_ftdi.sh $kernel"
+
