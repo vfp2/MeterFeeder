@@ -78,8 +78,8 @@ QWR4M004 (QNG Model PQ4000KU): 153
 Assuming you've got libusb 1.0.0 installed and have plugged in your USB MED devices:
 
 ```bash
-$ ./mac-build-exe.sh 
-$ ./builds/mac/meterfeeder
+$ ./linux-build-exe.sh 
+$ ./builds/linux/meterfeeder
 QWR4A003 (MED100K 100 kHz v1.0): 92
 QWR4M004 (QNG Model PQ4000KU): 153
 ```
