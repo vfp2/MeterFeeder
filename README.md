@@ -88,6 +88,11 @@ QWR4A003 (MED100K 100 kHz v1.0): 92
 QWR4M004 (QNG Model PQ4000KU): 153
 ```
 
+##### If trying to build meterfeeder.dll:
+```
+Add C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build to the PATH environment variable, modifying it to match your Visual Studio Code installation.
+```
+
 ### On Linux
 
 Assuming you've got libusb 1.0.0 installed and have plugged in your USB MED devices:
@@ -97,11 +102,6 @@ $ ./linux-build-exe.sh
 $ ./builds/linux/meterfeeder
 QWR4A003 (MED100K 100 kHz v1.0): 92
 QWR4M004 (QNG Model PQ4000KU): 153
-```
-
-##### If trying to build meterfeeder.dll:
-```
-Add C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build to the PATH environment variable, modifying it to match your Visual Studio Code installation.
 ```
 
 ### To run Parking Warden
