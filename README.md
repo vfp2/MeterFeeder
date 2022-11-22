@@ -6,7 +6,7 @@
 
 ## Dependencies
 
-Some environment details of machines where meterfeeder/parkingwarden has been reported to successfully build and run:
+Some environment details of machines where MeterFeeder/ParkingWarden has been reported to successfully build and run:
 
 ### MacOS
 
@@ -39,18 +39,18 @@ $ sudo apt install build-essential make libusb-1.0-0 libusb-1.0-0-dev python3
 
 ### Windows
 
-On some Windows 10 machines meterfeeder returns "no generators" even when you have them plugged in. The reason for this is that Windows automatically binds the devices to a VCP driver. It can be resolved by right-clicking and choosing "Install" for the `ftdiport.inf` and `ftdibus.inf` files that come with the FTD2XX drivers (see inside the `ftd2xx` folder).
+On some Windows 10 machines MeterFeeder returns "no generators" even when you have them plugged in. The reason for this is that Windows automatically binds the devices to a VCP driver. It can be resolved by right-clicking and choosing "Install" for the `ftdiport.inf` and `ftdibus.inf` files that come with the FTD2XX drivers (see inside the `ftd2xx` folder).
 
 ### Linux
 
-On Linux meterfeeder returns "no generators" even when you have them plugged in. The reason for this is that the kernel automatically binds the devices to a VCP driver called `ftdi_sio`. It can be resolved by either following official FT recommendations of disabling the VCP kernel module using this command:
+On Linux MeterFeeder returns "no generators" even when you have them plugged in. The reason for this is that the kernel automatically binds the devices to a VCP driver called `ftdi_sio`. It can be resolved by either following official FT recommendations of disabling the VCP kernel module using this command:
 
 ```bash
 $ sudo rmmod ftdi_sio
 $ sudo rmmod usbserial
 ```
 
-This brute solution might get you into trouble with other devices needing thje kernel's automatic VCP functionality. A more elegant solution is running the provided script that creates a udev rule and a helper script to automatically unbind MEDs from `ftdi_sio` and makes them visible to the FTD2XX driver underlying meterfeeder.
+This brute solution might get you into trouble with other devices needing thje kernel's automatic VCP functionality. A more elegant solution is running the provided script that creates a udev rule and a helper script to automatically unbind MEDs from `ftdi_sio` and makes them visible to the FTD2XX driver underlying MeterFeeder.
 
 ```bash
 $ ./linux-setup-udev.sh
@@ -58,7 +58,7 @@ $ ./linux-setup-udev.sh
 
 To remove the udev rule and helper script simply run `./linux-remove-udev.sh`.
 
-## To build just MeterFeeder and a basic binary to read in random byte numers (unsigned char type):
+## To build just MeterFeeder and a basic binary to read in random byte numbers (unsigned char type):
 
 ### On a Mac
 
