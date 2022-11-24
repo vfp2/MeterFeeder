@@ -33,8 +33,8 @@ bool MeterFeeder::Driver::Initialize(string* errorReason) {
 		serialNumber.resize(sizeof(devInfoList[i].SerialNumber));
 		FT_HANDLE ftHandle = devInfoList[i].ftHandle;
 
-		if (serialNumber.find("QWR4") != 0) {
-			// Skip any other but MED1K or MED100K devices
+		if (serialNumber.find("QWR") != 0) {
+			// Skip other but MED1K or MED100K and PQ128MU devices
 			continue;
 		}
 
@@ -209,7 +209,7 @@ extern "C" {
 		return driver.GetNumberGenerators();
 	}
 
-  	// Get the list of connected and successfully initialized generators.
+  	// Get the list of connected and successfully initialized generators with serial number and device description.
 	// Array element format: <serial number>|<description>
 	DllExport void MF_GetListGenerators(char** pGenerators) {
 		vector<Generator>* generators = driver.GetListGenerators();
@@ -217,6 +217,16 @@ extern "C" {
 			Generator generator = generators->at(i);
 			string fullGenDesc = generator.GetSerialNumber() + "|" + generator.GetDescription();
 			std::strcpy(pGenerators[i], fullGenDesc.c_str());
+		}
+	}
+
+	// Get the list of connected and successfully initialized generators.
+	// Array element format: <serial number>
+	DllExport void MF_GetSerialListGenerators(char** pGenerators) {
+		vector<Generator>* generators = driver.GetListGenerators();
+		for (int i = 0; i < driver.GetNumberGenerators(); i++) {
+			Generator generator = generators->at(i);
+			std::strcpy(pGenerators[i], generator.GetSerialNumber().c_str());
 		}
 	}
 
