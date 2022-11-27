@@ -7,19 +7,11 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/medtv1"
+    <LinearLayout
+        android:id="@+id/text_views_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="111"
-        />
-
-    <TextView
-        android:id="@+id/medtv2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="222"
-        />
+        android:orientation="vertical"/>
 
     <Button
         android:id="@+id/refresh_btn"
