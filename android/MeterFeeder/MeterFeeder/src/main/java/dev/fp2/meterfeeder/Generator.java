@@ -6,6 +6,7 @@ import com.ftdi.j2xx.FT_Device;
 public class Generator {
     final static byte FT_PURGE_RX = 1;
     final static byte FT_PURGE_TX = 2;
+    final static byte FTDI_DEVICE_START_STREAMING_COMMAND = (byte)0x96;
 
     D2xxManager ftdid2xx_;
     FT_Device device_;
@@ -34,15 +35,13 @@ public class Generator {
     };
 
     public boolean Stream() {
-        byte[] initCommand = {(byte)0x96}; // Streaming command
-
         // Purge before writing
         if (!device_.purge((byte)(FT_PURGE_RX | FT_PURGE_TX))) {
             return false;
         }
 
         // WRITE TO DEVICE
-        if (device_.write(initCommand) != initCommand.length) {
+        if (device_.write(new byte[] {FTDI_DEVICE_START_STREAMING_COMMAND}, 1, true) != 1) {
             return false;
         }
 
@@ -53,7 +52,8 @@ public class Generator {
         byte[] entropyBytes = new byte[length];
 
         // READ FROM DEVICE
-        if (device_.read(entropyBytes, length) != length) {
+        int read = device_.read(entropyBytes, length);
+        if (read != length) {
             return null;
         }
 
