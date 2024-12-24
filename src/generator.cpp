@@ -25,8 +25,8 @@ FT_HANDLE MeterFeeder::Generator::GetHandle() {
 };
 
 int MeterFeeder::Generator::StartStreaming() {
-    UCHAR startCommand = FTDI_DEVICE_START_STREAMING_COMMAND;
-    DWORD bytesTxd = 0;
+    unsigned char startCommand = FTDI_DEVICE_START_STREAMING_COMMAND;
+    unsigned int bytesTxd = 0;
 
 	// Purge before writing
 	FT_STATUS ftdiStatus = FT_Purge(ftHandle_, FT_PURGE_RX | FT_PURGE_TX);
@@ -44,8 +44,8 @@ int MeterFeeder::Generator::StartStreaming() {
 }
 
 int MeterFeeder::Generator::StopStreaming() {
-    UCHAR stopCommand = FTDI_DEVICE_STOP_STREAMING_COMMAND;
-    DWORD bytesTxd = 0;
+    unsigned char stopCommand = FTDI_DEVICE_STOP_STREAMING_COMMAND;
+    unsigned int bytesTxd = 0;
 
 	// Purge before writing
 	FT_STATUS ftdiStatus = FT_Purge(ftHandle_, FT_PURGE_RX | FT_PURGE_TX);
@@ -62,8 +62,8 @@ int MeterFeeder::Generator::StopStreaming() {
     return MF_OK;
 }
 
-int MeterFeeder::Generator::Read(DWORD length, UCHAR* dxData) {
-	DWORD bytesRxd = 0;
+int MeterFeeder::Generator::Read(unsigned int length, unsigned char* dxData) {
+	unsigned int bytesRxd = 0;
 
     // READ FROM DEVICE
 	FT_STATUS ftdiStatus = FT_Read(ftHandle_, dxData, length, &bytesRxd);

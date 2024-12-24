@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
 		int len = 1;
 		if (argc >= 3) len = atoi(argv[2]);
 
-		UCHAR* bytes = (UCHAR*)malloc(len * sizeof(UCHAR));
+		unsigned char* bytes = (unsigned char*)malloc(len * sizeof(unsigned char));
 		
 		bool cont = true;
 		if (argc == 4 && atoi(argv[3]) == 1)
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
 	for (size_t i = 0; i < generators->size(); i++) {
 		Generator *generator = &generators->at(i);
 		int len = 1;
-		UCHAR* bytes = (UCHAR*)malloc(len * sizeof(UCHAR));
+		unsigned char* bytes = (unsigned char*)malloc(len * sizeof(unsigned char));
 		driver->GetBytes(generator->GetHandle(), len, bytes, &errorReason);
 		if (errorReason.length() != 0) {
 			cout << errorReason << endl;

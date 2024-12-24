@@ -70,7 +70,7 @@ namespace MeterFeeder {
              * 
              * @return FT_STATUS or MT_STATUS on error communicating with the generator.
              */
-            int Read(DWORD length, UCHAR* dxData);
+            int Read(unsigned int length, unsigned char* dxData);
 
             /**
              * Close the generator.

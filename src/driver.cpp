@@ -7,7 +7,7 @@
 #include "driver.h"
 
 bool MeterFeeder::Driver::Initialize(string* errorReason) {
-	DWORD numDevices;
+	unsigned int numDevices;
 	FT_STATUS ftdiStatus = FT_CreateDeviceInfoList(&numDevices);
 	if (ftdiStatus != FT_OK) {
 		makeErrorStr(errorReason, "Error creating device info list. Check if generators are connected. [%d]", ftdiStatus);
@@ -28,7 +28,7 @@ bool MeterFeeder::Driver::Initialize(string* errorReason) {
 	_generators.clear();
 
 	// Open devices by serialNumber
-	for (DWORD i = 0; i < numDevices; i++) {
+	for (unsigned int i = 0; i < numDevices; i++) {
 		string serialNumber = devInfoList[i].SerialNumber;
 		serialNumber.resize(sizeof(devInfoList[i].SerialNumber));
 		FT_HANDLE ftHandle = devInfoList[i].ftHandle;
@@ -247,7 +247,7 @@ extern "C" {
 
 	// Get a random 32 bit integer.
 	DllExport int32_t MF_RandInt32(char* generatorSerialNumber, char* pErrorReason) {
-		UCHAR *buffer = (UCHAR*)malloc(sizeof(int32_t));
+		unsigned char *buffer = (unsigned char*)malloc(sizeof(int32_t));
 		MF_GetBytes(sizeof(int32_t), buffer, generatorSerialNumber, pErrorReason);
 
 		int32_t rc = 0;
@@ -263,7 +263,7 @@ extern "C" {
 	// Get a random floating point number between [0,1)
 	DllExport double MF_RandUniform(char* generatorSerialNumber, char* pErrorReason) {
 		int sizeofUint48 = 6; // value for the mantissa part of double
-		UCHAR *buffer = (UCHAR*)malloc(sizeof(sizeofUint48));
+		unsigned char *buffer = (unsigned char*)malloc(sizeof(sizeofUint48));
 		MF_GetBytes(sizeofUint48, buffer, generatorSerialNumber, pErrorReason);
 
 		uint64_t mantissa = 0;
