@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include "../ftd2xx/ftd2xx.h"
+#include "ftdi_driver_selector.h"
 
 #include "constants.h"
 
