@@ -29,6 +29,7 @@ typedef struct {
     int Flags;
     unsigned short VendorId;
     unsigned short ProductId;
+    FT_HANDLE *ftHandle; // Added ftHandle for compatibility
 } FT_DEVICE_LIST_INFO_NODE;
 
 // Function Mappings
@@ -144,6 +145,7 @@ static inline FT_STATUS ftdi_get_device_info_list(FT_DEVICE_LIST_INFO_NODE *pDes
         pDest[i].Flags = 0;
         pDest[i].VendorId = desc.idVendor;
         pDest[i].ProductId = desc.idProduct;
+        pDest[i].ftHandle = ftdi_new(); // Assign new FT_HANDLE for compatibility
         current = current->next;
     }
 
