@@ -124,7 +124,7 @@ static inline FT_STATUS ftdi_get_queue_status(FT_HANDLE *ftHandle, unsigned int 
 }
 
 // Helper Function for Device Info List
-static inline FT_STATUS ftdi_get_device_info_list(FT_DEVICE_LIST_INFO_NODE *pDest, int *pNumDevs) {
+static inline FT_STATUS ftdi_get_device_info_list(FT_DEVICE_LIST_INFO_NODE *pDest, unsigned int *pNumDevs) {
     struct ftdi_context *ftdi = ftdi_new();
     if (!ftdi) return FT_IO_ERROR;
     struct ftdi_device_list *dev_list = NULL;
