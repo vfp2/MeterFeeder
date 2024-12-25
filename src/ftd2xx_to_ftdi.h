@@ -44,6 +44,8 @@ typedef struct {
 #define FT_SetTimeouts(ftHandle, ReadTimeout, WriteTimeout) \
     ftdi_set_timeouts(ftHandle, ReadTimeout, WriteTimeout)
 #define FT_Purge(ftHandle, Mask) ftdi_usb_purge_buffers(ftHandle)
+#define FT_SetUSBParameters(ftHandle, InTransferSize, OutTransferSize) \
+    ftdi_set_usb_parameters(ftHandle, InTransferSize, OutTransferSize)
 #define FT_Read(ftHandle, lpBuffer, dwBytesToRead, lpBytesReturned) \
     ftdi_read_data(ftHandle, (unsigned char *)(lpBuffer), (int)(dwBytesToRead))
 #define FT_Write(ftHandle, lpBuffer, dwBytesToWrite, lpBytesWritten) \
@@ -72,6 +74,33 @@ typedef struct {
 static inline FT_STATUS ftdi_new_and_open(FT_HANDLE *ftHandle) {
     *ftHandle = ftdi_new();
     if (!*ftHandle) return FT_DEVICE_NOT_FOUND;
+    return FT_OK;
+}
+
+// Helper Function for USB Parameters
+static inline FT_STATUS ftdi_set_usb_parameters(FT_HANDLE ftHandle, int InTransferSize, int OutTransferSize) {
+    if (!ftHandle) return FT_INVALID_HANDLE;
+    int result;
+
+    // Using libusb control transfers to set endpoint sizes (if supported by your device)
+    result = libusb_control_transfer(ftHandle->usb_dev, 
+                                      LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE | LIBUSB_ENDPOINT_OUT,
+                                      0x01,  // Custom request to set USB parameters (vendor-specific)
+                                      InTransferSize, OutTransferSize,
+                                      NULL, 0, 1000);
+    if (result < 0) return FT_IO_ERROR;
+
+    return FT_OK;
+}
+
+// Helper Function for Timeouts
+static inline FT_STATUS ftdi_set_timeouts(FT_HANDLE ftHandle, unsigned int ReadTimeout, unsigned int WriteTimeout) {
+    if (!ftHandle) return FT_INVALID_HANDLE;
+
+    // Simulate timeout behavior (libftdi does not natively support this)
+    ftHandle->usb_read_timeout = ReadTimeout;
+    ftHandle->usb_write_timeout = WriteTimeout;
+
     return FT_OK;
 }
 
