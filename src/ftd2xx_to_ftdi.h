@@ -4,7 +4,7 @@
 #define FTD2XX_TO_FTDI_H
 
 #include <libftdi1/ftdi.h>
-#include <libusb-1.0/libusb.h>
+#include <libusb.h>
 #include <string.h>
 
 // Type Definitions
