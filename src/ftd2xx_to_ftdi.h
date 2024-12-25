@@ -1,4 +1,5 @@
 // ftd2xx_to_ftdi.h
+// https://chatgpt.com/share/676c06ce-f6f0-800c-a8d4-e7d3f5e31a01
 #ifndef FTD2XX_TO_FTDI_H
 #define FTD2XX_TO_FTDI_H
 
