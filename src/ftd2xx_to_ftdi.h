@@ -7,7 +7,7 @@
 #include <string.h>
 
 // Type Definitions
-typedef struct ftdi_context FT_HANDLE;
+typedef struct ftdi_context *FT_HANDLE;
 typedef int FT_STATUS;
 
 // Status Codes
@@ -29,7 +29,7 @@ typedef struct {
     int Flags;
     unsigned short VendorId;
     unsigned short ProductId;
-    FT_HANDLE *ftHandle; // Added ftHandle for compatibility
+    FT_HANDLE ftHandle; // Added ftHandle for compatibility
 } FT_DEVICE_LIST_INFO_NODE;
 
 // Function Mappings
@@ -69,7 +69,7 @@ typedef struct {
 #define FT_GetDeviceInfoList(pDest, pNumDevs) ftdi_get_device_info_list((pDest), (pNumDevs))
 
 // Helper Function for Open
-static inline FT_STATUS ftdi_new_and_open(FT_HANDLE **ftHandle) {
+static inline FT_STATUS ftdi_new_and_open(FT_HANDLE *ftHandle) {
     *ftHandle = ftdi_new();
     if (!*ftHandle) return FT_DEVICE_NOT_FOUND;
     return FT_OK;
@@ -109,6 +109,7 @@ static inline FT_STATUS ftdi_list_devices(FT_DEVICE_LIST_INFO_NODE *pArg1, void 
         pArg1[i].Flags = 0; // Update flags if needed
         pArg1[i].VendorId = desc.idVendor;
         pArg1[i].ProductId = desc.idProduct;
+        pArg1[i].ftHandle = ftdi_new(); // Assign new FT_HANDLE for compatibility
         current = current->next;
     }
 
@@ -118,7 +119,7 @@ static inline FT_STATUS ftdi_list_devices(FT_DEVICE_LIST_INFO_NODE *pArg1, void 
 }
 
 // Helper Function for Queue Status
-static inline FT_STATUS ftdi_get_queue_status(FT_HANDLE *ftHandle, unsigned int *dwRxBytes) {
+static inline FT_STATUS ftdi_get_queue_status(FT_HANDLE ftHandle, unsigned int *dwRxBytes) {
     int result = ftdi_read_data_get_chunksize(ftHandle, (unsigned int *)dwRxBytes);
     if (result < 0) return FT_IO_ERROR;
     return FT_OK;
