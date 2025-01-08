@@ -1,5 +1,6 @@
+// driver.rs: USB device management for MeterFeeder
 
-use libusb::{Context, Device, DeviceHandle};
+use ftdi::{Context, Device};
 use std::error::Error;
 use crate::generator::Generator;
 
@@ -18,17 +19,12 @@ impl Driver {
     }
 
     pub fn initialize(&mut self) -> Result<(), Box<dyn Error>> {
-        let devices = self.context.devices()?;
+        let devices = self.context.enumerate()?;
 
-        for device in devices.iter() {
-            let descriptor = device.device_descriptor()?;
+        for device_info in devices {
+            let device = self.context.open_device(device_info)?;
 
-            let handle = match device.open() {
-                Ok(h) => h,
-                Err(_) => continue,
-            };
-
-            let generator = Generator::new(device, handle, descriptor)?;
+            let generator = Generator::new(device, device_info.serial_number.clone())?;
             self.devices.push(generator);
         }
 

@@ -4,7 +4,7 @@ mod driver;
 mod generator;
 mod constants;
 
-use std::{env, process};
+use std::{env, process, time::Instant};
 use driver::Driver;
 use generator::Generator;
 
@@ -33,17 +33,31 @@ fn main() {
 
         match driver.find_generator(serial_number) {
             Some(generator) => {
+                if let Err(e) = generator.start_streaming() {
+                    eprintln!("Failed to start streaming: {}", e);
+                    process::exit(1);
+                }
+
                 let mut buffer = vec![0u8; length];
                 loop {
+                    let start_time = Instant::now();
+
                     if let Err(e) = generator.get_bytes(&mut buffer) {
                         eprintln!("Failed to get bytes: {}", e);
                         process::exit(1);
                     }
-                    println!("Retrieved bytes: {:?}", buffer);
+
+                    let elapsed_time = start_time.elapsed();
+                    println!("Retrieved bytes: {:?} (Time taken: {:.2?})", buffer, elapsed_time);
 
                     if !continuous {
                         break;
                     }
+                }
+
+                if let Err(e) = generator.stop_streaming() {
+                    eprintln!("Failed to stop streaming: {}", e);
+                    process::exit(1);
                 }
             }
             None => {
