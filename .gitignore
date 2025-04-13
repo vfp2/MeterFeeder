@@ -6,3 +6,4 @@ libmeterfeeder.dylib*
 meterfeeder.dll
 dist
 objs
+target
