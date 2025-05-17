@@ -1,4 +1,3 @@
-
 /**
  * MeterFeeder Library
  * 
@@ -16,6 +15,7 @@ int main(int argc, char *argv[]) {
 	string errorReason = "";
 	if (!driver->Initialize(&errorReason)) {
 		cout << errorReason << endl;
+		delete driver;
 		return -1;
 	}
 
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
 		} while (cont);
 			
 		delete bytes;
-
+		delete driver;
 		return 0;
 	}
 
@@ -84,4 +84,5 @@ int main(int argc, char *argv[]) {
 		delete bytes;
 	}
 	driver->Shutdown();
+	delete driver;
 }
