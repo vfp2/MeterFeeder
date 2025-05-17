@@ -10,6 +10,7 @@ MeterFeeder::Generator::Generator(char* serialNumber, char* description, FT_HAND
     serialNumber_ = serialNumber;
     description_ = description;
     ftHandle_ = handle;
+    isClosed_ = false;
 };
 
 std::string MeterFeeder::Generator::GetSerialNumber() {
@@ -21,10 +22,17 @@ std::string MeterFeeder::Generator::GetDescription() {
 };
 
 FT_HANDLE MeterFeeder::Generator::GetHandle() {
+    if (isClosed_) {
+        throw std::runtime_error("Generator is closed");
+    }
     return ftHandle_;
 };
 
 int MeterFeeder::Generator::StartStreaming() {
+    if (isClosed_) {
+        throw std::runtime_error("Generator is closed");
+    }
+
     UCHAR startCommand = FTDI_DEVICE_START_STREAMING_COMMAND;
     DWORD bytesTxd = 0;
 
@@ -44,6 +52,10 @@ int MeterFeeder::Generator::StartStreaming() {
 }
 
 int MeterFeeder::Generator::StopStreaming() {
+    if (isClosed_) {
+        throw std::runtime_error("Generator is closed");
+    }
+
     UCHAR stopCommand = FTDI_DEVICE_STOP_STREAMING_COMMAND;
     DWORD bytesTxd = 0;
 
@@ -63,6 +75,10 @@ int MeterFeeder::Generator::StopStreaming() {
 }
 
 int MeterFeeder::Generator::Read(DWORD length, UCHAR* dxData) {
+    if (isClosed_) {
+        throw std::runtime_error("Generator is closed");
+    }
+
 	DWORD bytesRxd = 0;
 
     // READ FROM DEVICE
@@ -78,5 +94,9 @@ int MeterFeeder::Generator::Read(DWORD length, UCHAR* dxData) {
 }
 
 void MeterFeeder::Generator::Close() {
-    FT_Close(ftHandle_);
+    if (!isClosed_) {
+        FT_Close(ftHandle_);
+        ftHandle_ = nullptr;
+        isClosed_ = true;
+    }
 }
