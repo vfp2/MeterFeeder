@@ -20,12 +20,11 @@ Visual Studio Code: 1.49.3 with the various C++ development plugins installed
 ### Windows 10+
 
 ```
-Windows 10 64-bit
+Windows 11 64-bit
 Python: 3.9.0
-Visual Studio: Community 2019 (16.0.30804.86 D16.8)
+Visual Studio: Community 2022
 Compiler: cl /version
-    Microsoft (R) C/C++ Optimizing Compiler Version 19.28.29335 for x64 
-    Microsoft (R) Incremental Linker Version 14.28.29335.0
+    Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34810 for x64 
 ```
 
 ### Linux
@@ -74,16 +73,14 @@ QWR4M004 (QNG Model PQ4000KU): 153
 ### On Windows
 
 ```bash
-C:\>win-build-executable.bat
-C:\>builds\windows\meterfeeder.exe
+C:\MeterFeeder>win-build-executable.bat
+C:\MeterFeeder>builds\windows\meterfeeder.exe
 QWR4A003 (MED100K 100 kHz v1.0): 92
 QWR4M004 (QNG Model PQ4000KU): 153
 ```
 
-##### If trying to build meterfeeder.dll:
-```
-Add C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build to the PATH environment variable, modifying it to match your Visual Studio Code installation.
-```
+##### If trying to build meterfeeder.exe/dll:
+Run your commands from the MeterFeeder folder using the *x64 Native Tools Command Prompt for VS2022*.
 
 ### On Linux
 
