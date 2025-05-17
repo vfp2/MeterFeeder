@@ -36,17 +36,17 @@ int MeterFeeder::Generator::StartStreaming() {
     UCHAR startCommand = FTDI_DEVICE_START_STREAMING_COMMAND;
     DWORD bytesTxd = 0;
 
-	// Purge before writing
-	FT_STATUS ftdiStatus = FT_Purge(ftHandle_, FT_PURGE_RX | FT_PURGE_TX);
+    // Purge before writing
+    FT_STATUS ftdiStatus = FT_Purge(ftHandle_, FT_PURGE_RX | FT_PURGE_TX);
     if (ftdiStatus != FT_OK) {
-		return ftdiStatus;
-	}
+        return ftdiStatus;
+    }
 
     // WRITE TO DEVICE
-	ftdiStatus = FT_Write(ftHandle_, &startCommand, 1, &bytesTxd);
-	if (ftdiStatus != FT_OK || bytesTxd != 1) {
-		return ftdiStatus;
-	}
+    ftdiStatus = FT_Write(ftHandle_, &startCommand, 1, &bytesTxd);
+    if (ftdiStatus != FT_OK || bytesTxd != 1) {
+        return ftdiStatus;
+    }
 
     return MF_OK;
 }
@@ -59,17 +59,17 @@ int MeterFeeder::Generator::StopStreaming() {
     UCHAR stopCommand = FTDI_DEVICE_STOP_STREAMING_COMMAND;
     DWORD bytesTxd = 0;
 
-	// Purge before writing
-	FT_STATUS ftdiStatus = FT_Purge(ftHandle_, FT_PURGE_RX | FT_PURGE_TX);
+    // Purge before writing
+    FT_STATUS ftdiStatus = FT_Purge(ftHandle_, FT_PURGE_RX | FT_PURGE_TX);
     if (ftdiStatus != FT_OK) {
-		return ftdiStatus;
-	}
+        return ftdiStatus;
+    }
 
     // WRITE TO DEVICE
-	ftdiStatus = FT_Write(ftHandle_, &stopCommand, 1, &bytesTxd);
-	if (ftdiStatus != FT_OK || bytesTxd != 1) {
-		return ftdiStatus;
-	}
+    ftdiStatus = FT_Write(ftHandle_, &stopCommand, 1, &bytesTxd);
+    if (ftdiStatus != FT_OK || bytesTxd != 1) {
+        return ftdiStatus;
+    }
 
     return MF_OK;
 }
@@ -93,12 +93,12 @@ int MeterFeeder::Generator::Read(DWORD length, UCHAR* dxData) {
     DWORD bytesRxd = 0;
 
     // READ FROM DEVICE
-	FT_STATUS ftdiStatus = FT_Read(ftHandle_, dxData, length, &bytesRxd);
+    FT_STATUS ftdiStatus = FT_Read(ftHandle_, dxData, length, &bytesRxd);
     if (bytesRxd != length) {
         return MF_RXD_BYTES_LENGTH_WRONG;
     }
     if (ftdiStatus != FT_OK) {
-		return ftdiStatus;
+        return ftdiStatus;
     }
 
     return MF_OK;
