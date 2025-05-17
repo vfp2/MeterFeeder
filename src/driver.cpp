@@ -211,23 +211,47 @@ extern "C" {
 
   	// Get the list of connected and successfully initialized generators with serial number and device description.
 	// Array element format: <serial number>|<description>
-	DllExport void MF_GetListGenerators(char** pGenerators) {
+	DllExport int MF_GetListGeneratorsWithSize(char** pGenerators, int arraySize) {
 		vector<Generator>* generators = driver.GetListGenerators();
-		for (int i = 0; i < driver.GetNumberGenerators(); i++) {
+		int numGenerators = driver.GetNumberGenerators();
+		
+		if (arraySize < numGenerators) {
+			return -1;  // Array too small
+		}
+		
+		for (int i = 0; i < numGenerators; i++) {
 			Generator generator = generators->at(i);
 			string fullGenDesc = generator.GetSerialNumber() + "|" + generator.GetDescription();
 			std::strcpy(pGenerators[i], fullGenDesc.c_str());
 		}
+		return numGenerators;
+	}
+
+	// Original function maintained for backward compatibility
+	DllExport void MF_GetListGenerators(char** pGenerators) {
+		MF_GetListGeneratorsWithSize(pGenerators, driver.GetNumberGenerators());
 	}
 
 	// Get the list of connected and successfully initialized generators.
 	// Array element format: <serial number>
-	DllExport void MF_GetSerialListGenerators(char** pGenerators) {
+	DllExport int MF_GetSerialListGeneratorsWithSize(char** pGenerators, int arraySize) {
 		vector<Generator>* generators = driver.GetListGenerators();
-		for (int i = 0; i < driver.GetNumberGenerators(); i++) {
+		int numGenerators = driver.GetNumberGenerators();
+		
+		if (arraySize < numGenerators) {
+			return -1;  // Array too small
+		}
+		
+		for (int i = 0; i < numGenerators; i++) {
 			Generator generator = generators->at(i);
 			std::strcpy(pGenerators[i], generator.GetSerialNumber().c_str());
 		}
+		return numGenerators;
+	}
+
+	// Original function maintained for backward compatibility
+	DllExport void MF_GetSerialListGenerators(char** pGenerators) {
+		MF_GetSerialListGeneratorsWithSize(pGenerators, driver.GetNumberGenerators());
 	}
 
 	// Get bytes of randomness.
