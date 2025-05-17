@@ -281,6 +281,7 @@ extern "C" {
 			((unsigned char*)&rc)[i] = buffer[i];
 		}
 
+		free(buffer);
 		return rc;
 	}
 
@@ -300,6 +301,7 @@ extern "C" {
 		double uniform = (double)mantissa;
 		uniform /= 281474976710656.0;  // 2^(6*8)
 
+		free(buffer);
 		return uniform;
 	}
 
