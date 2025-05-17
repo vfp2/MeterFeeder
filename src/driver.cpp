@@ -196,6 +196,10 @@ extern "C" {
     DllExport bool MF_Clear(char* generatorSerialNumber, char* pErrorReason) {
 		string errorReason = "";
 		Generator *generator = driver.FindGeneratorBySerial(generatorSerialNumber);
+		if (!generator) {
+			std::strcpy(pErrorReason, "Generator not found");
+			return false;
+		}
 		driver.Clear(generator->GetHandle(), &errorReason);
 		std::strcpy(pErrorReason, errorReason.c_str());
 		if (*pErrorReason != '\0') {
@@ -258,6 +262,10 @@ extern "C" {
 	DllExport void MF_GetBytes(int length, unsigned char* buffer, char* generatorSerialNumber, char* pErrorReason) {
 		string errorReason = "";
 		Generator *generator = driver.FindGeneratorBySerial(generatorSerialNumber);
+		if (!generator) {
+			std::strcpy(pErrorReason, "Generator not found");
+			return;
+		}
 		driver.GetBytes(generator->GetHandle(), length, buffer, &errorReason);
 		std::strcpy(pErrorReason, errorReason.c_str());
 	}
