@@ -79,7 +79,18 @@ int MeterFeeder::Generator::Read(DWORD length, UCHAR* dxData) {
         throw std::runtime_error("Generator is closed");
     }
 
-	DWORD bytesRxd = 0;
+    // Validate input parameters
+    if (!dxData) {
+        throw std::runtime_error("Invalid buffer pointer");
+    }
+    if (length == 0) {
+        throw std::runtime_error("Length must be greater than 0");
+    }
+    if (length > MF_MAX_READ_LENGTH) {
+        throw std::runtime_error("Length exceeds maximum allowed size");
+    }
+
+    DWORD bytesRxd = 0;
 
     // READ FROM DEVICE
 	FT_STATUS ftdiStatus = FT_Read(ftHandle_, dxData, length, &bytesRxd);

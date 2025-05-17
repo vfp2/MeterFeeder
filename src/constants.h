@@ -37,3 +37,6 @@ enum {
 
 #define FTDI_DEVICE_START_STREAMING_COMMAND           0x96U
 #define FTDI_DEVICE_STOP_STREAMING_COMMAND            0xe0U
+
+// Maximum length for a single read operation (1MB)
+#define MF_MAX_READ_LENGTH (1024 * 1024)
