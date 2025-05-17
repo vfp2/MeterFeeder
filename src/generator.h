@@ -7,6 +7,7 @@
 #pragma once
 
 #include <string>
+#include <stdexcept>
 
 #include "../ftd2xx/ftd2xx.h"
 
@@ -45,6 +46,7 @@ namespace MeterFeeder {
              * Get the handle for interacting with the generator.
              * 
              * @return The FT_HANDLE for specifying this device.
+             * @throws std::runtime_error if the generator is closed
              */
             FT_HANDLE GetHandle();
 
@@ -52,6 +54,7 @@ namespace MeterFeeder {
              * Send command to start streaming.
              * 
              * @return FT_STATUS or MT_STATUS on error communicating with the generator.
+             * @throws std::runtime_error if the generator is closed
              */
             int StartStreaming();
 
@@ -59,6 +62,7 @@ namespace MeterFeeder {
              * Send command to stop streaming.
              * 
              * @return FT_STATUS or MT_STATUS on error communicating with the generator.
+             * @throws std::runtime_error if the generator is closed
              */
             int StopStreaming();
 
@@ -69,17 +73,27 @@ namespace MeterFeeder {
              * @param Pointer to where to store the streamed data (the random number).
              * 
              * @return FT_STATUS or MT_STATUS on error communicating with the generator.
+             * @throws std::runtime_error if the generator is closed
              */
             int Read(DWORD length, UCHAR* dxData);
 
             /**
              * Close the generator.
+             * Can be called multiple times safely.
              */
             void Close();
+
+            /**
+             * Check if the generator is closed.
+             * 
+             * @return true if the generator is closed, false otherwise
+             */
+            bool IsClosed() const { return isClosed_; }
 
         private:
             std::string serialNumber_;
             std::string description_;
             FT_HANDLE ftHandle_;
+            bool isClosed_ = false;
     };
 }
