@@ -16,7 +16,7 @@ import os
 import sys
 import glob
 import numpy as np
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from itertools import combinations
 
 from scipy import stats
@@ -132,6 +132,8 @@ def build_epoch_matrix(devices):
 COLORS = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
           "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22"]
 
+NZDT = timezone(timedelta(hours=13))
+
 
 def plot_random_walks(ax, devices, serials):
     """Overlay random walk for each device, x-axis = real timestamps."""
@@ -158,7 +160,7 @@ def plot_random_walks(ax, devices, serials):
     ax.set_ylabel("Cumulative Walk")
     ax.set_title("Random Walks — All Devices")
     ax.legend(fontsize=7, ncol=3, loc="upper left")
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M", tz=NZDT))
     ax.tick_params(axis="x", labelsize=8)
 
 
@@ -259,7 +261,7 @@ def plot_netvar(ax, epoch_times, nv):
         f"GCP1 NetVar — "
         f"\u03c7\u00b2={nv['chi2']:.1f}, df={nv['df']}, p={nv['p_value']:.4f}"
     )
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M", tz=NZDT))
     ax.tick_params(axis="x", labelsize=8)
 
 
@@ -355,7 +357,7 @@ def plot_coherence(ax, epoch_times, coh):
     ax2.set_ylim(-0.5, 1)
 
     ax.set_title("GCP2-Style Coherence (bandpass 0.01–0.1 Hz, 60s windows)")
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M", tz=NZDT))
     ax.tick_params(axis="x", labelsize=8)
 
     # Combined legend
